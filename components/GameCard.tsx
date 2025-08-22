@@ -1,22 +1,16 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { Game } from '../types';
 import Icon from './Icon';
 
 interface GameCardProps {
   game: Game;
-  onPlay: (game: Game) => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, onPlay }) => {
+const GameCard: React.FC<GameCardProps> = ({ game }) => {
   return (
-    <div 
-      onClick={() => onPlay(game)}
-      className="block group relative rounded-xl overflow-hidden bg-[#181818] shadow-lg transition-all duration-300 hover:shadow-violet-500/30 hover:scale-105 cursor-pointer"
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onPlay(game)}
-    >
+    <Link to={`/game/${game.id}`} className="block group relative rounded-xl overflow-hidden bg-[#181818] shadow-lg transition-all duration-300 hover:shadow-violet-500/30 hover:scale-105 cursor-pointer">
       <img src={game.imageUrl} alt={game.title} className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       <div className="absolute inset-0 flex flex-col justify-end p-4">
@@ -34,7 +28,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onPlay }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
