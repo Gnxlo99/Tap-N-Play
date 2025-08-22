@@ -8,7 +8,7 @@ const JUMP_AND_RUN_GAME: Game = {
   heroImageUrl: 'https://picsum.photos/seed/jumpgame/1600/900',
   rating: 4.6,
   description: 'Tap to jump and avoid the obstacles. How long can you survive in this fast-paced endless runner?',
-  playUrl: '/games/jump-and-run.html'
+  playUrl: '/jump-and-run.html'
 };
 
 export const FEATURED_GAME: Game = JUMP_AND_RUN_GAME;
