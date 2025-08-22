@@ -6,9 +6,10 @@ import GameCard from './GameCard';
 interface GameGridProps {
   title: string;
   games: Game[];
+  onPlay: (game: Game) => void;
 }
 
-const GameGrid: React.FC<GameGridProps> = ({ title, games }) => {
+const GameGrid: React.FC<GameGridProps> = ({ title, games, onPlay }) => {
   return (
     <section className="my-12">
       <div className="flex items-center justify-between mb-6">
@@ -16,7 +17,7 @@ const GameGrid: React.FC<GameGridProps> = ({ title, games }) => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {games.map(game => (
-          <GameCard key={game.id} game={game} />
+          <GameCard key={game.id} game={game} onPlay={onPlay} />
         ))}
       </div>
     </section>
