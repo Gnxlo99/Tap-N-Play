@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Space Shooter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #000; font-family: 'Poppins', sans-serif; overflow: hidden; overscroll-behavior-y: contain; -webkit-tap-highlight-color: transparent; }
+        canvas { display: block; background-color: #0c0c1e; }
+        #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: white; text-align: center; pointer-events: none; }
+        .screen { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.7); pointer-events: all; }
+        .hidden { display: none; }
+        h1 { font-size: 48px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; }
+        p { font-size: 24px; margin-bottom: 30px; }
+        button { font-family: 'Poppins', sans-serif; font-size: 24px; padding: 15px 40px; border-radius: 50px; border: none; background: #fff; color: #000; cursor: pointer; text-transform: uppercase; pointer-events: all; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui-container">
+        <div id="start-screen" class="screen">
+            <h1>Space Shooter</h1>
+            <button id="start-button">Play</button>
+        </div>
+        <div id="game-over-screen" class="screen hidden">
+            <h1>Game Over</h1>
+            <p>Score: <span id="final-score">0</span></p>
+            <button id="retry-button">Retry</button>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const startButton = document.getElementById('start-button');
+        const retryButton = document.getElementById('retry-button');
+        const finalScoreEl = document.getElementById('final-score');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let player, projectiles, enemies, particles, score, keys, lastTime;
+        let enemySpawnTimer = 0;
+        let enemySpawnInterval = 1000; // ms
+        let isGameOver = true;
+
+        class Player {
+            constructor(x, y, radius, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (keys['ArrowLeft'] && this.x - this.radius > 0) this.x -= 5;
+                if (keys['ArrowRight'] && this.x + this.radius < canvas.width) this.x += 5;
+                this.draw();
+            }
+        }
+
+        class Projectile {
+            constructor(x, y, radius, color, velocity) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.velocity = velocity;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.y += this.velocity.y;
+                this.draw();
+            }
+        }
+
+        class Enemy {
+             constructor(x, y, radius, color, velocity) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.velocity = velocity;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.y += this.velocity.y;
+                this.draw();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, radius, color, velocity) {
+                this.x = x; this.y = y; this.radius = radius; this.color = color; this.velocity = velocity;
+                this.alpha = 1;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.velocity.x; this.y += this.velocity.y;
+                this.alpha -= 0.02;
+                this.draw();
+            }
+        }
+        
+        function init() {
+            player = new Player(canvas.width / 2, canvas.height - 50, 20, 'white');
+            projectiles = [];
+            enemies = [];
+            particles = [];
+            score = 0;
+            keys = {};
+            enemySpawnTimer = 0;
+            isGameOver = false;
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            lastTime = performance.now();
+            requestAnimationFrame(animate);
+        }
+
+        function spawnEnemies(timestamp) {
+            enemySpawnTimer += timestamp - lastTime;
+            if (enemySpawnTimer > enemySpawnInterval) {
+                const radius = Math.random() * (30 - 10) + 10;
+                const x = Math.random() * (canvas.width - radius * 2) + radius;
+                const y = -radius;
+                const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
+                const velocity = { y: Math.random() * 2 + 1 };
+                enemies.push(new Enemy(x, y, radius, color, velocity));
+                enemySpawnTimer = 0;
+            }
+        }
+        
+        function drawScore() {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Poppins';
+            ctx.fillText(`Score: ${score}`, 20, 30);
+        }
+
+        function animate(timestamp) {
+            if (isGameOver) return;
+            requestAnimationFrame(animate);
+
+            ctx.fillStyle = 'rgba(12, 12, 30, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            player.update();
+            spawnEnemies(timestamp);
+            drawScore();
+
+            particles.forEach((p, i) => {
+                if (p.alpha <= 0) particles.splice(i, 1);
+                else p.update();
+            });
+
+            projectiles.forEach((p, i) => {
+                p.update();
+                if (p.y + p.radius < 0) projectiles.splice(i, 1);
+            });
+
+            enemies.forEach((e, ei) => {
+                e.update();
+                 if (e.y - e.radius > canvas.height) {
+                    enemies.splice(ei, 1);
+                 }
+
+                const distPlayer = Math.hypot(player.x - e.x, player.y - e.y);
+                if (distPlayer - e.radius - player.radius < 1) {
+                    endGame();
+                }
+
+                projectiles.forEach((p, pi) => {
+                    const dist = Math.hypot(p.x - e.x, p.y - e.y);
+                    if (dist - e.radius - p.radius < 1) {
+                         for (let i = 0; i < e.radius * 2; i++) {
+                            particles.push(new Particle(p.x, p.y, Math.random() * 2, e.color, {
+                                x: (Math.random() - 0.5) * (Math.random() * 6),
+                                y: (Math.random() - 0.5) * (Math.random() * 6)
+                            }));
+                        }
+                        
+                        score += 100;
+                        setTimeout(() => {
+                            enemies.splice(ei, 1);
+                            projectiles.splice(pi, 1);
+                        }, 0);
+                    }
+                });
+            });
+
+            lastTime = timestamp;
+        }
+        
+        function endGame() {
+            isGameOver = true;
+            finalScoreEl.textContent = score;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Space' && !isGameOver) {
+                 projectiles.push(new Projectile(player.x, player.y, 5, 'white', { y: -10 }));
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (player) {
+                player.x = canvas.width / 2;
+                player.y = canvas.height - 50;
+            }
+        });
+        
+        startButton.addEventListener('click', init);
+        retryButton.addEventListener('click', init);
+    </script>
+</body>
+</html>

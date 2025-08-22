@@ -14,7 +14,7 @@ const HomePage: React.FC = () => {
                     Welcome to Tap N Play, your ultimate destination for free online games. Whether you're looking for thrilling action, mind-bending puzzles, or immersive RPGs, we have something for everyone. Our vast collection of browser games is constantly updated, so there's always a new adventure waiting for you. No downloads, no installations—just pure, instant fun. Start playing now and join a community of gamers from around the world!
                 </p>
             </section>
-            <GameGrid title="Our Game" games={MOCK_GAMES} />
+            <GameGrid title="All Games" games={MOCK_GAMES} />
         </div>
     );
 };

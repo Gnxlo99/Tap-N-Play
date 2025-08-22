@@ -8,4 +8,5 @@ export interface Game {
   rating: number;
   description: string;
   playUrl: string;
+  instructions: string;
 }
