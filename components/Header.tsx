@@ -4,7 +4,7 @@ import Icon from './Icon';
 
 const Header: React.FC = () => {
   return (
-    <header className="sticky top-0 z-30 bg-[#0a0a0a]/80 backdrop-blur-sm border-b border-gray-800/50">
+    <header className="sticky top-0 z-30 bg-[#0a0a0a] border-b border-gray-800/50">
       <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex-shrink-0 text-2xl font-bold text-white flex items-center">
