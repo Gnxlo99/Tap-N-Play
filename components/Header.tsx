@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Icon from './Icon';
 
 const Header: React.FC = () => {
@@ -7,10 +7,9 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-30 bg-[#0a0a0a] border-b border-gray-800/50">
       <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <div className="flex-shrink-0 text-2xl font-bold text-white flex items-center">
-          <Icon icon="fa-gamepad" className="text-violet-400 mr-3" />
-          <span>Tap N Play</span>
-        </div>
+        <Link to="/" className="flex-shrink-0" aria-label="Go to homepage">
+          <img src="/images/logo.png" alt="Tap N Play" className="h-8 w-auto" />
+        </Link>
 
         {/* Search Bar */}
         <div className="relative w-full max-w-xl">
