@@ -23,10 +23,11 @@ const GamePage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+      <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-12">
+        
         {/* Game Column */}
-        <div className="lg:col-span-2">
-           <div className="relative w-full max-w-md mx-auto lg:max-w-full bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" style={{ aspectRatio: '9 / 16' }}>
+        <div className="w-full max-w-[360px] flex-shrink-0">
+           <div className="relative bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" style={{ aspectRatio: '9 / 16' }}>
               <iframe
                 src={game.playUrl}
                 title={game.title}
@@ -37,8 +38,8 @@ const GamePage: React.FC = () => {
         </div>
 
         {/* Details Column */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24">
+        <div className="w-full max-w-2xl">
+          <div className="lg:sticky top-24">
             <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-3">{game.title}</h1>
             
             <div className="flex items-center space-x-4 mb-6">
