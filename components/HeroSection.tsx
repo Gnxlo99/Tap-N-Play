@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Game } from '../types';
@@ -21,10 +20,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ game }) => {
             <Icon icon="fa-play" />
             <span>Play Now</span>
           </Link>
-          <button className="bg-gray-700/50 backdrop-blur-sm hover:bg-gray-600/70 text-white font-bold py-3 px-8 rounded-full transition-transform duration-300 hover:scale-105 flex items-center space-x-2">
-            <Icon icon="fa-plus" />
-            <span>My List</span>
-          </button>
         </div>
       </div>
     </div>
