@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { Game } from '../types';
 import Icon from './Icon';
 
@@ -9,7 +10,7 @@ interface GameCardProps {
 
 const GameCard: React.FC<GameCardProps> = ({ game }) => {
   return (
-    <div className="group relative rounded-xl overflow-hidden bg-[#181818] shadow-lg transition-all duration-300 hover:shadow-violet-500/30 hover:scale-105">
+    <Link to={`/play/${game.id}`} className="block group relative rounded-xl overflow-hidden bg-[#181818] shadow-lg transition-all duration-300 hover:shadow-violet-500/30 hover:scale-105">
       <img src={game.imageUrl} alt={game.title} className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       <div className="absolute inset-0 flex flex-col justify-end p-4">
@@ -21,13 +22,13 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
               <Icon icon="fa-star" />
               <span className="font-bold text-white">{game.rating}</span>
             </div>
-            <button className="bg-violet-600 rounded-full w-12 h-12 flex items-center justify-center text-white hover:bg-violet-500 transition-colors">
+            <div className="bg-violet-600 rounded-full w-12 h-12 flex items-center justify-center text-white transition-colors">
               <Icon icon="fa-play" className="text-xl" />
-            </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
