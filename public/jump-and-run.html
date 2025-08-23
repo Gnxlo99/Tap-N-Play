@@ -155,10 +155,10 @@
             const JUMP_STRENGTH = -450;
             const GRAVITY = 2200;
             const OBSTACLE_WIDTH = 40;
-            const OBSTACLE_SPEED = -210;
+            const OBSTACLE_SPEED = -225;
             const OBSTACLE_SPACING = 260;
-            const MIN_OBSTACLE_GAP = 105;
-            const MAX_OBSTACLE_GAP = 125;
+            const MIN_OBSTACLE_GAP = 90;
+            const MAX_OBSTACLE_GAP = 105;
 
             // --- GAME STATE ---
             let gameState = 'Start'; // Start, Playing, GameOver
@@ -258,7 +258,7 @@
                     
                     const minCenterY = gap / 2 + verticalPadding;
                     const maxCenterY = CANVAS_HEIGHT - gap / 2 - verticalPadding;
-                    const newCenterY = Math.max(minCenterY, Math.min(maxCenterY, lastObstacleYCenter + (Math.random() - 0.5) * 350));
+                    const newCenterY = Math.max(minCenterY, Math.min(maxCenterY, lastObstacleYCenter + (Math.random() - 0.5) * 500));
 
                     const obstacleY = newCenterY - gap / 2;
                     lastObstacleYCenter = newCenterY;
