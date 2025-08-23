@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from './Icon';
 
 const Header: React.FC = () => {
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const headerHeight = 80; // Corresponds to h-20
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > headerHeight) {
+        // Scrolling down and past the header
+        setVisible(false);
+      } else {
+        // Scrolling up or at the top
+        setVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30 bg-[#0a0a0a] border-b border-gray-800/50">
+    <header className={`sticky top-0 z-30 bg-[#0a0a0a] border-b border-gray-800/50 transition-transform duration-300 ease-in-out ${visible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link to="/" className="flex-shrink-0" aria-label="Go to homepage">
