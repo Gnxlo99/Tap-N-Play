@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Header: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
-  const headerHeight = 80; // Corresponds to h-20
+  const headerHeight = 96; // Corresponds to h-24
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,10 +30,14 @@ const Header: React.FC = () => {
 
   return (
     <header className={`sticky top-0 z-30 bg-[#0a0a0a] border-b border-gray-800/50 transition-transform duration-300 ease-in-out ${visible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <div className="flex items-center justify-center h-20 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-center h-24 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link to="/" aria-label="Go to homepage">
-          <img src="/images/logo.png" alt="Tap N Play" className="h-16 w-auto" />
+          <img 
+            src="/images/logo.png" 
+            alt="Tap N Play" 
+            className="h-20 w-auto transition-transform duration-300 hover:scale-105" 
+          />
         </Link>
       </div>
     </header>
