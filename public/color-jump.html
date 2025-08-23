@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Jump</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-in-out;
+        }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T815YBZXVX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-T815YBZXVX');
+    </script>
+  </head>
+  <body class="bg-gray-900">
+    <div id="root"></div>
+    <script type="text/babel">
+// --- From types.ts ---
+const GameColor = Object.freeze({
+    Red: '#ef4444',
+    Blue: '#3b82f6',
+    Green: '#22c55e',
+    Yellow: '#eab308',
+});
+
+const GameState = Object.freeze({
+    MainMenu: 'MainMenu',
+    Playing: 'Playing',
+    GameOver: 'GameOver',
+});
+
+const ObstacleType = Object.freeze({
+    Ring: 'Ring',
+    Bar: 'Bar',
+    ColorChanger: 'ColorChanger',
+    ExpandingCircle: 'ExpandingCircle',
+});
+
+
+// --- From constants.ts ---
+const GAME_WIDTH = 400;
+const GAME_HEIGHT = 711; 
+
+const COLORS = [GameColor.Red, GameColor.Blue, GameColor.Green, GameColor.Yellow];
+
+const PLAYER_RADIUS = 15;
+const GRAVITY = 0.45;
+const JUMP_STRENGTH = -8;
+
+const OBSTACLE_SPACING = 450;
+
+const RING_BASE_ROTATION_SPEED = 0.03;
+const BAR_BASE_SPEED = 3.5;
+
+
+// --- From components/GameOverScreen.tsx ---
+const GameOverScreen = ({ score, highScore, isNewHighScore, onRestart, onMainMenu }) => {
+    return (
+        <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex flex-col items-center justify-center p-8 z-10 animate-fade-in">
+            <h1 className="text-6xl font-extrabold mb-4 text-red-500">Game Over</h1>
+
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm text-center mb-8 relative">
+                {isNewHighScore && (
+                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 font-bold px-4 py-1 rounded-full text-sm uppercase animate-bounce">
+                        New High Score!
+                    </div>
+                )}
+                <p className="text-gray-400 text-sm uppercase font-semibold">
+                    Final Score
+                </p>
+                <p className="text-5xl font-bold text-white mb-4">
+                    {score}
+                </p>
+                <p className="text-gray-400 text-sm uppercase font-semibold">
+                    High Score
+                </p>
+                <p className={`text-2xl font-semibold ${isNewHighScore ? 'text-yellow-400' : 'text-cyan-400'}`}>
+                    {highScore}
+                </p>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-xs">
+                <button
+                    onClick={onRestart}
+                    className="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg text-xl hover:bg-green-600 transform hover:scale-105 transition-all"
+                >
+                    Play Again
+                </button>
+                <button
+                    onClick={onMainMenu}
+                    className="w-full bg-gray-600 text-white font-bold py-3 px-4 rounded-lg text-xl hover:bg-gray-700 transform hover:scale-105 transition-all"
+                >
+                    Main Menu
+                </button>
+            </div>
+        </div>
+    );
+};
+
+
+// --- From components/MainMenu.tsx ---
+const MainMenu = ({ onStartGame }) => {
+    const canvasRef = React.useRef(null);
+    const rotationRef = React.useRef(0);
+    const animationFrameId = React.useRef(null);
+
+    React.useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        const canvasSize = 300;
+        canvas.width = canvasSize;
+        canvas.height = canvasSize;
+        
+        const ringRadius = 100;
+        const ringThickness = 20;
+        const colors = COLORS;
+        const segmentAngle = (2 * Math.PI) / colors.length;
+        const rotationSpeed = 0.005;
+
+        const animate = () => {
+            rotationRef.current += rotationSpeed;
+
+            ctx.clearRect(0, 0, canvasSize, canvasSize);
+            
+            ctx.save();
+            ctx.translate(canvasSize / 2, canvasSize / 2);
+            ctx.rotate(rotationRef.current);
+
+            colors.forEach((color, i) => {
+                ctx.beginPath();
+                ctx.arc(0, 0, ringRadius, i * segmentAngle, (i + 1) * segmentAngle);
+                ctx.lineWidth = ringThickness;
+                ctx.strokeStyle = color;
+                ctx.stroke();
+            });
+
+            ctx.restore();
+            
+            animationFrameId.current = requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        return () => {
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
+        };
+    }, []);
+
+    return (
+        <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-between py-24 px-8 z-10 animate-fade-in">
+            <canvas
+                ref={canvasRef}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50"
+                style={{ zIndex: 0 }}
+            />
+
+            <div className="text-center" style={{ zIndex: 1 }}>
+                <h1 className="text-6xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-blue-500 to-green-500">
+                    Color Jump
+                </h1>
+                <p className="text-xl text-gray-200 mt-4">Jump through the matching colors to survive!</p>
+            </div>
+
+            <div className="w-full max-w-xs" style={{ zIndex: 1 }}>
+                <button
+                    onClick={onStartGame}
+                    className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-4 px-4 rounded-lg text-2xl hover:from-green-500 hover:to-blue-600 transform hover:scale-105 transition-transform shadow-lg"
+                >
+                    Play
+                </button>
+            </div>
+        </div>
+    );
+};
+
+
+// --- From components/GameCanvas.tsx ---
+const GameCanvas = ({ onGameOver, onScoreUpdate }) => {
+    const canvasRef = React.useRef(null);
+    const gameLoopRef = React.useRef(null);
+    const playerRef = React.useRef({
+        x: GAME_WIDTH / 2,
+        y: GAME_HEIGHT - 100,
+        radius: PLAYER_RADIUS,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        velocityY: 0,
+        state: 'alive',
+        scaleY: 1,
+        dyingTime: 0,
+    });
+    const obstaclesRef = React.useRef([]);
+    const particlesRef = React.useRef([]);
+    const cameraYRef = React.useRef(0);
+    const scoreRef = React.useRef(0);
+    const difficultyMultiplierRef = React.useRef(1);
+    const nextObstacleYRef = React.useRef(GAME_HEIGHT - OBSTACLE_SPACING * 2);
+    const nextObstacleIdRef = React.useRef(0);
+    const lastTimestampRef = React.useRef(null);
+    const obstaclesSinceColorChangerRef = React.useRef(0);
+    const nextColorChangerThresholdRef = React.useRef(Math.floor(Math.random() * 2) + 3); // Initial threshold: 3 or 4
+    
+    const [internalState, setInternalState] = React.useState('ready');
+    const isGameActiveRef = React.useRef(false);
+    const internalStateRef = React.useRef(internalState);
+    internalStateRef.current = internalState;
+    const onGameOverRef = React.useRef(onGameOver);
+    onGameOverRef.current = onGameOver;
+    
+    const createParticles = React.useCallback((count, x, y, color, initialVelocity = 5) => {
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * initialVelocity + 1;
+            particlesRef.current.push({
+                x,
+                y,
+                radius: Math.random() * 3 + 1,
+                color,
+                velocityX: Math.cos(angle) * speed,
+                velocityY: Math.sin(angle) * speed,
+                life: 30,
+                maxLife: 30,
+            });
+        }
+    }, []);
+
+    const generatePrimaryObstacle = React.useCallback((y) => {
+        const typeRoll = Math.random();
+        let newObstacle;
+        const difficulty = difficultyMultiplierRef.current;
+
+        if (typeRoll < 0.33) { // Expanding Circle
+            const colors = [...COLORS].sort(() => 0.5 - Math.random());
+            const rotationSpeed = (Math.random() * 0.02 + RING_BASE_ROTATION_SPEED) * (Math.random() < 0.5 ? 1 : -1) * difficulty;
+            newObstacle = { id: nextObstacleIdRef.current++, y, type: ObstacleType.ExpandingCircle, dotRadius: 15, colors, passed: false, currentRadius: 60, minRadius: 60, maxRadius: 120, expandSpeed: 1.5, isExpanding: true, rotation: Math.random() * Math.PI * 2, rotationSpeed };
+        } else if (typeRoll < 0.66) { // Ring
+            const colors = [...COLORS].sort(() => 0.5 - Math.random());
+            const rotationSpeed = (Math.random() * 0.02 + RING_BASE_ROTATION_SPEED) * (Math.random() < 0.5 ? 1 : -1) * difficulty;
+            newObstacle = { id: nextObstacleIdRef.current++, y, type: ObstacleType.Ring, radius: 100, thickness: 20, colors, passed: false, rotation: Math.random() * Math.PI * 2, rotationSpeed };
+        } else { // Bar
+            const colors = COLORS;
+            newObstacle = { id: nextObstacleIdRef.current++, y, type: ObstacleType.Bar, x: 0, width: GAME_WIDTH * 2, height: 25, colors, passed: false, speed: (Math.random() * 1 + BAR_BASE_SPEED) * difficulty, direction: Math.random() < 0.5 ? 1 : -1 };
+        }
+        obstaclesRef.current.push(newObstacle);
+    }, []);
+
+
+    const resetGame = React.useCallback(() => {
+        playerRef.current = {
+            x: GAME_WIDTH / 2, y: GAME_HEIGHT - 100, radius: PLAYER_RADIUS,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)], velocityY: 0,
+            state: 'alive', scaleY: 1, dyingTime: 0
+        };
+        obstaclesRef.current = [];
+        particlesRef.current = [];
+        cameraYRef.current = 0;
+        scoreRef.current = 0;
+        difficultyMultiplierRef.current = 1;
+        onScoreUpdate(0);
+        
+        nextObstacleYRef.current = playerRef.current.y - OBSTACLE_SPACING;
+        isGameActiveRef.current = false;
+        setInternalState('ready');
+        lastTimestampRef.current = null;
+
+        obstaclesSinceColorChangerRef.current = 0;
+        nextColorChangerThresholdRef.current = Math.floor(Math.random() * 2) + 3; // 3 or 4
+
+        for (let i = 0; i < 5; i++) {
+             generatePrimaryObstacle(nextObstacleYRef.current);
+             obstaclesSinceColorChangerRef.current += 1;
+
+             const nextSpacing = OBSTACLE_SPACING + (Math.random() * 100);
+
+             if (obstaclesSinceColorChangerRef.current >= nextColorChangerThresholdRef.current) {
+                const yPos = nextObstacleYRef.current - nextSpacing / 2;
+                const colorChanger = { 
+                    id: nextObstacleIdRef.current++, 
+                    y: yPos, 
+                    type: ObstacleType.ColorChanger, 
+                    radius: 20, 
+                    passed: false 
+                };
+                obstaclesRef.current.push(colorChanger);
+                obstaclesSinceColorChangerRef.current = 0;
+                nextColorChangerThresholdRef.current = Math.floor(Math.random() * 2) + 3;
+            }
+            
+             nextObstacleYRef.current -= nextSpacing;
+        }
+    }, [generatePrimaryObstacle, onScoreUpdate]);
+    
+    const triggerGameOver = React.useCallback(() => {
+        if (playerRef.current.state === 'alive') {
+            playerRef.current.state = 'dying';
+            playerRef.current.dyingTime = 60; // 1 second animation
+            isGameActiveRef.current = false; // Stop physics updates
+            createParticles(50, playerRef.current.x, playerRef.current.y, playerRef.current.color, 8);
+        }
+    }, [createParticles]);
+
+    const draw = React.useCallback((ctx) => {
+        ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+        ctx.save();
+        ctx.translate(0, cameraYRef.current);
+
+        // Draw Particles
+        particlesRef.current.forEach(p => {
+            ctx.beginPath();
+            ctx.globalAlpha = p.life / p.maxLife;
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        });
+
+        // Draw Player if alive
+        if (playerRef.current.state === 'alive') {
+            ctx.save();
+            ctx.translate(playerRef.current.x, playerRef.current.y);
+            ctx.scale(1, playerRef.current.scaleY);
+            ctx.beginPath();
+            ctx.arc(0, 0, playerRef.current.radius, 0, Math.PI * 2);
+            ctx.fillStyle = playerRef.current.color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Draw Obstacles
+        obstaclesRef.current.forEach(obs => {
+            ctx.save();
+            if (obs.type === ObstacleType.Ring) {
+                ctx.translate(GAME_WIDTH / 2, obs.y);
+                ctx.rotate(obs.rotation);
+                const segmentAngle = (2 * Math.PI) / obs.colors.length;
+                obs.colors.forEach((color, i) => {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, obs.radius, i * segmentAngle, (i + 1) * segmentAngle);
+                    ctx.lineWidth = obs.thickness;
+                    ctx.strokeStyle = color;
+                    ctx.stroke();
+                });
+            } else if (obs.type === ObstacleType.ExpandingCircle) {
+                ctx.translate(GAME_WIDTH / 2, obs.y);
+                const DOTS_PER_COLOR = 3;
+                const totalDots = obs.colors.length * DOTS_PER_COLOR;
+                const segmentAngle = (2 * Math.PI) / totalDots;
+                for (let i = 0; i < totalDots; i++) {
+                    const color = obs.colors[Math.floor(i / DOTS_PER_COLOR)];
+                    const angle = obs.rotation + i * segmentAngle;
+                    const dotX = obs.currentRadius * Math.cos(angle);
+                    const dotY = obs.currentRadius * Math.sin(angle);
+                    ctx.beginPath();
+                    ctx.arc(dotX, dotY, obs.dotRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                }
+            } else if (obs.type === ObstacleType.Bar) {
+                const segmentWidth = obs.width / obs.colors.length;
+                const startOffset = obs.x % obs.width;
+                for (let offset = startOffset - obs.width; offset < GAME_WIDTH; offset += obs.width) {
+                    obs.colors.forEach((color, i) => {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(offset + (i * segmentWidth), obs.y - obs.height / 2, segmentWidth, obs.height);
+                    });
+                }
+            } else if (obs.type === ObstacleType.ColorChanger) {
+                ctx.translate(GAME_WIDTH / 2, obs.y);
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, obs.radius);
+                gradient.addColorStop(0, 'white');
+                gradient.addColorStop(0.5, COLORS[0]);
+                gradient.addColorStop(0.75, COLORS[1]);
+                gradient.addColorStop(1, COLORS[2]);
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(0, 0, obs.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+             ctx.restore();
+        });
+        ctx.shadowBlur = 0;
+        ctx.restore();
+
+        if (internalState === 'ready') {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Tap to Start', GAME_WIDTH / 2, GAME_HEIGHT / 2);
+        }
+    }, [internalState]);
+
+    const drawRef = React.useRef(draw);
+    drawRef.current = draw;
+
+    const gameLoop = React.useCallback((timestamp) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        if (!lastTimestampRef.current) {
+            lastTimestampRef.current = timestamp;
+            gameLoopRef.current = requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        const deltaTime = (timestamp - lastTimestampRef.current) / (1000 / 60);
+        lastTimestampRef.current = timestamp;
+
+        const clampedDeltaTime = Math.min(deltaTime, 3);
+        
+        const player = playerRef.current;
+        
+        if (player.state === 'dying') {
+            player.dyingTime -= clampedDeltaTime;
+            if (player.dyingTime <= 0) {
+                onGameOverRef.current(scoreRef.current);
+                return;
+            }
+        }
+
+        if (isGameActiveRef.current) {
+            player.velocityY += GRAVITY * clampedDeltaTime;
+            player.y += player.velocityY * clampedDeltaTime;
+            player.scaleY = 1 - (player.velocityY / (JUMP_STRENGTH * -2.5));
+
+            if (player.velocityY < 0 && Math.random() > 0.5) {
+                 createParticles(1, player.x, player.y + player.radius, player.color, 1);
+            }
+
+            const targetCameraOffset = (GAME_HEIGHT * 0.6) - player.y;
+            if (targetCameraOffset > cameraYRef.current) {
+                cameraYRef.current = targetCameraOffset;
+            }
+
+            const screenBottomInWorldCoords = GAME_HEIGHT - cameraYRef.current;
+            if (player.y - player.radius > screenBottomInWorldCoords) {
+                triggerGameOver();
+            }
+
+            for (const obs of obstaclesRef.current) {
+                if (obs.type === ObstacleType.Bar) obs.x += obs.speed * obs.direction * clampedDeltaTime;
+                if (obs.type === ObstacleType.Ring) obs.rotation += obs.rotationSpeed * clampedDeltaTime;
+                if (obs.type === ObstacleType.ExpandingCircle) {
+                    obs.rotation += obs.rotationSpeed * clampedDeltaTime;
+                    obs.currentRadius += obs.expandSpeed * (obs.isExpanding ? 1 : -1) * clampedDeltaTime;
+                    if (obs.currentRadius >= obs.maxRadius) obs.isExpanding = false;
+                    if (obs.currentRadius <= obs.minRadius) obs.isExpanding = true;
+                }
+
+                const playerTop = player.y - player.radius;
+                const playerBottom = player.y + player.radius;
+
+                if (!obs.passed && playerTop < obs.y) {
+                    if (obs.type !== ObstacleType.ColorChanger) {
+                        scoreRef.current += 1;
+                        onScoreUpdate(scoreRef.current);
+                        difficultyMultiplierRef.current = 1 + scoreRef.current / 100;
+                    }
+                    obs.passed = true;
+                }
+                
+                if (obs.type === ObstacleType.Ring) {
+                    const distance = Math.hypot(player.x - GAME_WIDTH / 2, player.y - obs.y);
+                    if (distance > obs.radius - obs.thickness / 2 - player.radius && distance < obs.radius + obs.thickness / 2 + player.radius) {
+                        const ringTop = obs.y - obs.thickness / 2;
+                        const ringBottom = obs.y + obs.thickness / 2;
+
+                        if (playerTop < ringBottom && playerBottom > ringTop) {
+                            const playerAngle = Math.atan2(player.y - obs.y, player.x - GAME_WIDTH / 2);
+
+                            const getSegmentColorAtAngle = (angle) => {
+                                const normalizedAngle = (angle - obs.rotation + Math.PI * 4) % (Math.PI * 2);
+                                const segmentAngle = (2 * Math.PI) / obs.colors.length;
+                                const colorIndex = Math.floor(normalizedAngle / segmentAngle);
+                                return obs.colors[colorIndex];
+                            };
+                            
+                            const graceFactor = 0.85; 
+                            const offsetAngle = Math.asin((player.radius * graceFactor) / distance);
+
+                            const pointsToTest = [
+                                playerAngle,
+                                playerAngle + offsetAngle,
+                                playerAngle - offsetAngle
+                            ];
+                            
+                            for (const angle of pointsToTest) {
+                                if (getSegmentColorAtAngle(angle) !== player.color) {
+                                    triggerGameOver();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else if (obs.type === ObstacleType.ExpandingCircle) {
+                    if (playerBottom > obs.y - obs.currentRadius - obs.dotRadius && playerTop < obs.y + obs.currentRadius + obs.dotRadius) {
+                        const totalDots = obs.colors.length * 3;
+                        for (let i = 0; i < totalDots; i++) {
+                            const angle = obs.rotation + i * (2 * Math.PI / totalDots);
+                            const dotX = GAME_WIDTH / 2 + obs.currentRadius * Math.cos(angle);
+                            const dotY = obs.y + obs.currentRadius * Math.sin(angle);
+                            if (Math.hypot(player.x - dotX, player.y - dotY) < player.radius + obs.dotRadius) {
+                                if (obs.colors[Math.floor(i / 3)] !== player.color) triggerGameOver();
+                            }
+                        }
+                    }
+                } else if (obs.type === ObstacleType.Bar && playerBottom > obs.y - obs.height / 2 && playerTop < obs.y + obs.height / 2) {
+                    const segmentWidth = obs.width / obs.colors.length;
+                    const patternX = ((player.x - obs.x) % obs.width + obs.width) % obs.width;
+                    const colorIndex = Math.floor(patternX / segmentWidth);
+                    if (obs.colors[colorIndex] !== player.color) triggerGameOver();
+                } else if (obs.type === ObstacleType.ColorChanger && Math.hypot(player.x - GAME_WIDTH / 2, player.y - obs.y) < player.radius + obs.radius) {
+                    let newColor;
+                    do { newColor = COLORS[Math.floor(Math.random() * COLORS.length)]; } while (newColor === player.color);
+                    player.color = newColor;
+                    COLORS.forEach(color => createParticles(5, GAME_WIDTH / 2, obs.y, color, 5));
+                    obs.y = -Infinity;
+                }
+            }
+
+            while (nextObstacleYRef.current > -cameraYRef.current - GAME_HEIGHT * 1.5) {
+                generatePrimaryObstacle(nextObstacleYRef.current);
+                obstaclesSinceColorChangerRef.current += 1;
+
+                const nextSpacing = OBSTACLE_SPACING + (Math.random() * 100);
+
+                if (obstaclesSinceColorChangerRef.current >= nextColorChangerThresholdRef.current) {
+                    const yPos = nextObstacleYRef.current - nextSpacing / 2;
+                    const colorChanger = { 
+                        id: nextObstacleIdRef.current++, 
+                        y: yPos, 
+                        type: ObstacleType.ColorChanger, 
+                        radius: 20, 
+                        passed: false 
+                    };
+                    obstaclesRef.current.push(colorChanger);
+                    obstaclesSinceColorChangerRef.current = 0;
+                    nextColorChangerThresholdRef.current = Math.floor(Math.random() * 2) + 3; // 3 or 4
+                }
+                
+                nextObstacleYRef.current -= nextSpacing;
+            }
+            obstaclesRef.current = obstaclesRef.current.filter(obs => obs.y < player.y + GAME_HEIGHT);
+        }
+
+        particlesRef.current.forEach((p, index) => {
+            p.x += p.velocityX;
+            p.y += p.velocityY;
+            p.life -= clampedDeltaTime;
+            if (p.life <= 0) particlesRef.current.splice(index, 1);
+        });
+
+        drawRef.current(ctx);
+        gameLoopRef.current = requestAnimationFrame(gameLoop);
+    }, [onScoreUpdate, triggerGameOver, createParticles, generatePrimaryObstacle]);
+    
+    const handleUserInteraction = React.useCallback(() => {
+        if (playerRef.current.state !== 'alive') return;
+        if (internalStateRef.current === 'ready') {
+            lastTimestampRef.current = performance.now();
+            setInternalState('playing');
+            isGameActiveRef.current = true;
+            playerRef.current.velocityY = JUMP_STRENGTH;
+        } else if (internalStateRef.current === 'playing') {
+            playerRef.current.velocityY = JUMP_STRENGTH;
+        }
+    }, []);
+
+    React.useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        
+        const eventListener = (e) => {
+            e.preventDefault();
+            handleUserInteraction();
+        };
+        canvas.addEventListener('mousedown', eventListener);
+        canvas.addEventListener('touchstart', eventListener);
+
+        resetGame();
+        gameLoopRef.current = requestAnimationFrame(gameLoop);
+
+        return () => {
+            if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
+            canvas.removeEventListener('mousedown', eventListener);
+            canvas.removeEventListener('touchstart', eventListener);
+        };
+    }, [resetGame, handleUserInteraction, gameLoop]);
+
+    return <canvas ref={canvasRef} width={GAME_WIDTH} height={GAME_HEIGHT} className="w-full h-full" />;
+};
+
+
+// --- From App.tsx ---
+const App = () => {
+    const [gameState, setGameState] = React.useState(GameState.MainMenu);
+    const [score, setScore] = React.useState(0);
+    const [highScore, setHighScore] = React.useState(0);
+    const [isNewHighScore, setIsNewHighScore] = React.useState(false);
+
+    React.useEffect(() => {
+        const storedHighScore = localStorage.getItem('colorJumpHighScore');
+        if (storedHighScore) {
+            setHighScore(parseInt(storedHighScore, 10));
+        }
+    }, []);
+
+    const handleStartGame = React.useCallback(() => {
+        setScore(0);
+        setIsNewHighScore(false);
+        setGameState(GameState.Playing);
+    }, []);
+
+    const handleGameOver = React.useCallback((finalScore) => {
+        setScore(finalScore);
+        if (finalScore > highScore) {
+            setHighScore(finalScore);
+            localStorage.setItem('colorJumpHighScore', finalScore.toString());
+            setIsNewHighScore(true);
+        } else {
+            setIsNewHighScore(false);
+        }
+        setGameState(GameState.GameOver);
+    }, [highScore]);
+
+    const handleRestart = React.useCallback(() => {
+        handleStartGame();
+    }, [handleStartGame]);
+
+    const handleMainMenu = React.useCallback(() => {
+        setGameState(GameState.MainMenu);
+    }, []);
+
+
+
+    return (
+        <div className="relative w-screen h-screen flex items-center justify-center font-sans overflow-hidden bg-gray-900 text-white">
+            <div className="w-full h-full max-w-md max-h-screen aspect-[9/16] bg-black shadow-2xl shadow-cyan-500/20 relative">
+                {gameState === GameState.MainMenu && <MainMenu onStartGame={handleStartGame} />}
+                
+                <div style={{ display: gameState === GameState.Playing ? 'block' : 'none' }}>
+                     <GameCanvas
+                        onGameOver={handleGameOver}
+                        onScoreUpdate={setScore}
+                    />
+                </div>
+                
+                {gameState === GameState.Playing && (
+                    <div className="absolute top-0 left-0 right-0 p-4 text-white font-bold text-2xl text-center pointer-events-none z-20">
+                        {`Score: ${score}`}
+                    </div>
+                )}
+
+                {gameState === GameState.GameOver && (
+                    <GameOverScreen
+                        score={score}
+                        highScore={highScore}
+                        isNewHighScore={isNewHighScore}
+                        onRestart={handleRestart}
+                        onMainMenu={handleMainMenu}
+                    />
+                )}
+            </div>
+        </div>
+    );
+};
+
+
+// --- From index.tsx ---
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+    </script>
+  </body>
+</html>
