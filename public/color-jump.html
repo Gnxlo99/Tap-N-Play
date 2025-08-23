@@ -627,6 +627,7 @@ const App = () => {
     const [score, setScore] = React.useState(0);
     const [highScore, setHighScore] = React.useState(0);
     const [isNewHighScore, setIsNewHighScore] = React.useState(false);
+    const [gameId, setGameId] = React.useState(0);
 
     React.useEffect(() => {
         const storedHighScore = localStorage.getItem('colorJumpHighScore');
@@ -639,6 +640,7 @@ const App = () => {
         setScore(0);
         setIsNewHighScore(false);
         setGameState(GameState.Playing);
+        setGameId(id => id + 1);
     }, []);
 
     const handleGameOver = React.useCallback((finalScore) => {
@@ -670,6 +672,7 @@ const App = () => {
                 
                 <div style={{ display: gameState === GameState.Playing ? 'block' : 'none' }}>
                      <GameCanvas
+                        key={gameId}
                         onGameOver={handleGameOver}
                         onScoreUpdate={setScore}
                     />
