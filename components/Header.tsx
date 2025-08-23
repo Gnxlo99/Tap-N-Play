@@ -8,7 +8,7 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link to="/" className="flex-shrink-0" aria-label="Go to homepage">
-          <img src="/images/logo.png" alt="Tap N Play" className="h-10 w-auto" />
+          <img src="/images/logo.png" alt="Tap N Play" className="h-14 w-auto" />
         </Link>
 
         {/* Search Bar */}
