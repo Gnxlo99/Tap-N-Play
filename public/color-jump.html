@@ -62,19 +62,19 @@ const GAME_HEIGHT = 711;
 const COLORS = [GameColor.Red, GameColor.Blue, GameColor.Green, GameColor.Yellow];
 
 const PLAYER_RADIUS = 15;
-const GRAVITY = 0.45;
-const JUMP_STRENGTH = -8;
+const GRAVITY = 0.6;
+const JUMP_STRENGTH = -9.5;
 
-const OBSTACLE_SPACING = 450;
+const OBSTACLE_SPACING = 550;
 
-const RING_BASE_ROTATION_SPEED = 0.03;
-const BAR_BASE_SPEED = 3.5;
+const RING_BASE_ROTATION_SPEED = 0.035;
+const BAR_BASE_SPEED = 4.0;
 
 
 // --- From components/GameOverScreen.tsx ---
 const GameOverScreen = ({ score, highScore, isNewHighScore, onRestart, onMainMenu }) => {
     return (
-        <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex flex-col items-center justify-center p-8 z-10 animate-fade-in">
+        <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex flex-col items-center justify-center p-8 z-10 animate-fade-in text-center">
             <h1 className="text-6xl font-extrabold mb-4 text-red-500">Game Over</h1>
 
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm text-center mb-8 relative">
@@ -484,7 +484,7 @@ const GameCanvas = ({ onGameOver, onScoreUpdate }) => {
                     if (obs.type !== ObstacleType.ColorChanger) {
                         scoreRef.current += 1;
                         onScoreUpdate(scoreRef.current);
-                        difficultyMultiplierRef.current = 1 + scoreRef.current / 100;
+                        difficultyMultiplierRef.current = 1 + scoreRef.current / 75;
                     }
                     obs.passed = true;
                 }
@@ -670,13 +670,13 @@ const App = () => {
             <div className="w-full h-full max-w-md max-h-screen aspect-[9/16] bg-black shadow-2xl shadow-cyan-500/20 relative">
                 {gameState === GameState.MainMenu && <MainMenu onStartGame={handleStartGame} />}
                 
-                <div style={{ display: gameState === GameState.Playing ? 'block' : 'none' }}>
+                {gameState === GameState.Playing && (
                      <GameCanvas
                         key={gameId}
                         onGameOver={handleGameOver}
                         onScoreUpdate={setScore}
                     />
-                </div>
+                )}
                 
                 {gameState === GameState.Playing && (
                     <div className="absolute top-0 left-0 right-0 p-4 text-white font-bold text-2xl text-center pointer-events-none z-20">
