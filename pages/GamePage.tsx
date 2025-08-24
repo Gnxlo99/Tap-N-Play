@@ -21,13 +21,16 @@ const GamePage: React.FC = () => {
     );
   }
 
+  const gameAspectRatio = game.aspectRatio || '9 / 16';
+  const isVerticalGame = gameAspectRatio === '9 / 16';
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-12">
         
         {/* Game Column */}
-        <div className="w-full max-w-[360px] flex-shrink-0">
-           <div className="relative bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" style={{ aspectRatio: '9 / 16' }}>
+        <div className={`w-full ${isVerticalGame ? 'max-w-[360px]' : 'max-w-[500px]'} flex-shrink-0`}>
+           <div className="relative bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" style={{ aspectRatio: gameAspectRatio }}>
               <iframe
                 src={game.playUrl}
                 title={game.title}
