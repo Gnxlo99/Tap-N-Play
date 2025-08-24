@@ -367,10 +367,10 @@
             const JUMP_STRENGTH = -450;
             const GRAVITY = 2200;
             const OBSTACLE_WIDTH = 40;
-            const OBSTACLE_SPEED = -180;
+            const OBSTACLE_SPEED = -200;
             const OBSTACLE_SPACING = 260;
-            const MIN_OBSTACLE_GAP = 108;
-            const MAX_OBSTACLE_GAP = 126;
+            const MIN_OBSTACLE_GAP = 100;
+            const MAX_OBSTACLE_GAP = 115;
             const APPEARANCES = [
                 { shape: 'square', color: '#FFFFFF', unlock: { type: 'default' }, description: 'Default square' },
                 { shape: 'circle', color: '#FFFFFF', unlock: { type: 'score', value: 5 }, description: 'Score 5 points' },
@@ -379,7 +379,7 @@
                 { shape: 'star', color: '#FFD700', unlock: { type: 'score', value: 30 }, description: 'Score 30 points', jumpEffect: { colors: ['#FFD700', '#FFA500'], count: 8, life: 0.5 } },
                 { shape: 'crystal', color: '#ADD8E6', unlock: { type: 'score', value: 50 }, description: 'Score 50 points', jumpEffect: { colors: ['#ADD8E6', '#FFFFFF'], count: 10, life: 0.6 } },
                 { shape: 'diamond', color: '#00FFFF', unlock: { type: 'score', value: 75 }, description: 'Score 75 points', jumpEffect: { colors: ['#00FFFF', '#00BFFF'], count: 12, life: 0.7 } },
-                { shape: 'phoenix', color: '#FF4500', unlock: { type: 'score', value: 100 }, description: 'Score 100 points', jumpEffect: { colors: ['#FF4500', '#FF6347', '#FFD700'], count: 15, life: 1.0 } },
+                { shape: 'rotating_color_square', color: '#FF5733', unlock: { type: 'score', value: 100 }, description: 'Score 100 points', jumpEffect: { colors: ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#F4FF33', '#33FFF1'], count: 20, life: 1.0 } },
             ];
             const ENV_REWARDS = [
                 { unlock: { type: 'default' }, description: 'Default Theme', obstacleColor: '#CCCCCC', bg: { type: 'solid', color: '#000000' } },
@@ -650,7 +650,15 @@
                     case 'star': { const s=5, oR=width/2, iR=width/4; let rot=Math.PI/2*3, step=Math.PI/s; context.beginPath(); context.moveTo(0, -oR); for (let i=0; i<s; i++) { context.lineTo(Math.cos(rot)*oR, Math.sin(rot)*oR); rot+=step; context.lineTo(Math.cos(rot)*iR, Math.sin(rot)*iR); rot+=step; } context.lineTo(0,-oR); context.closePath(); context.fill(); break; }
                     case 'crystal': { const w=width*0.8, h=height, pH=h*0.3; context.beginPath(); context.moveTo(0,-h/2); context.lineTo(w/2,-h/2+pH); context.lineTo(w/2,h/2-pH); context.lineTo(0,h/2); context.lineTo(-w/2,h/2-pH); context.lineTo(-w/2,-h/2+pH); context.closePath(); context.fill(); break; }
                     case 'diamond': { const p=Math.sin(timestamp*0.008)*2, w=width+p, h=height+p; context.beginPath(); context.moveTo(0,-h/2); context.lineTo(w/2,0); context.lineTo(0,h/2); context.lineTo(-w/2,0); context.closePath(); context.fill(); break; }
-                    case 'phoenix': { const w=width, h=height; context.beginPath(); context.moveTo(0,h/2); context.bezierCurveTo(-w,h*0.25,-w,-h*0.75,0,-h/2); context.bezierCurveTo(w,-h*0.75,w,h*0.25,0,h/2); context.closePath(); context.fill(); break; }
+                    case 'rotating_color_square': {
+                        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#F4FF33', '#33FFF1'];
+                        if (gameState === 'Playing') {
+                            context.fillStyle = colors[score % colors.length];
+                        }
+                        context.rotate(timestamp * 0.005);
+                        context.fillRect(-width/2, -height/2, width, height);
+                        break;
+                    }
                     default: context.fillRect(-width/2, -height/2, width, height); break;
                 }
                 context.restore();
