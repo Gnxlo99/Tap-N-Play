@@ -50,7 +50,7 @@
             height: 100%;
             background-color: #000;
         }
-        #game-over-screen {
+        .screen-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -88,51 +88,250 @@
             margin: 5px 0;
             font-weight: 600;
         }
+        #game-over-message-container {
+             min-height: 80px; /* Prevents layout shift */
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: center;
+        }
         #game-over-message {
             font-size: 22px;
             font-style: italic;
             color: #AAAAAA;
             margin: 0 20px;
-            min-height: 60px; /* Prevents layout shift */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        #retry-button {
+        #button-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .action-button {
             font-family: 'Poppins', sans-serif;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 600;
-            color: #222831;
-            background-color: #EEEEEE;
             border: none;
-            padding: 15px 40px;
+            padding: 12px 30px;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.1s ease, opacity 0.3s ease;
+            transition: transform 0.1s ease, opacity 0.3s ease, background-color 0.2s ease;
         }
-        #retry-button:active {
+        #retry-button {
+             color: #222831;
+             background-color: #EEEEEE;
+        }
+        #share-button {
+            color: #EEEEEE;
+            background-color: #4769FF;
+        }
+        .action-button:active {
             transform: scale(0.95);
         }
         #retry-button.disabled {
             cursor: not-allowed;
             opacity: 0.5;
         }
+        #customize-button {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #EEEEEE;
+            background-color: rgba(238, 238, 238, 0.2);
+            border: 2px solid #EEEEEE;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            z-index: 5;
+        }
+        #customize-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        #confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 11;
+            overflow: hidden;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 16px;
+            will-change: transform;
+        }
+
+        /* --- Customization Modal --- */
+        #customize-screen {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 20;
+        }
+        #customize-modal {
+            background-color: #313842;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+        }
+        #customize-modal h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #customize-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            background-color: #222831;
+            border-radius: 50px;
+            padding: 5px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background-color: transparent;
+            color: #AAAAAA;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .tab-button.active {
+            background-color: #4769FF;
+            color: #EEEEEE;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        #appearance-grid, #env-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .appearance-item {
+            aspect-ratio: 1 / 1;
+            border: 2px solid #555;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .appearance-item:active {
+            transform: scale(0.9);
+        }
+        .appearance-item.selected {
+            border-color: #54D77B;
+            box-shadow: 0 0 10px #54D77B;
+        }
+        .appearance-item.locked {
+            filter: grayscale(1);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .appearance-item.locked .lock-icon {
+            display: block;
+        }
+        .lock-icon {
+            display: none;
+            font-size: 24px;
+        }
+        #unlock-hint, #env-unlock-hint {
+            text-align: center;
+            font-size: 14px;
+            color: #AAAAAA;
+            min-height: 20px;
+            margin-bottom: 20px;
+        }
+        #close-customize-button {
+            width: 100%;
+            background-color: #4769FF;
+            color: #EEEEEE;
+            margin-top: auto;
+        }
+        
+        /* --- Unlock Toast Notification --- */
+        #unlock-toast {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #54D77B;
+            color: #222831;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 30;
+            transition: top 0.5s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        #unlock-toast.show {
+            top: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
-        <div id="game-over-screen" style="display: none;">
+        <div id="confetti-container"></div>
+        <div id="unlock-toast">New Appearance Unlocked! ✨</div>
+        <div id="game-over-screen" class="screen-overlay" style="display: none;">
             <div class="modal-content">
                 <h1>Game Over</h1>
                 <div id="scores">
                     <p>Score: <span id="current-score">0</span></p>
                     <p>High Score: <span id="high-score">0</span></p>
                 </div>
-                <p id="game-over-message"></p>
-                <button id="retry-button">Retry</button>
+                <div id="game-over-message-container">
+                    <p id="game-over-message"></p>
+                </div>
+                <div id="button-container">
+                    <button id="retry-button" class="action-button">Retry</button>
+                    <button id="share-button" class="action-button">Share</button>
+                </div>
             </div>
         </div>
+        <div id="customize-screen" class="screen-overlay" style="display: none;">
+             <div id="customize-modal">
+                <h2>Customize</h2>
+                <div id="customize-tabs">
+                    <button class="tab-button active" data-tab="player">Player</button>
+                    <button class="tab-button" data-tab="environment">Environment</button>
+                </div>
+                <div class="tab-content active" id="player-tab-content">
+                    <div id="appearance-grid"></div>
+                    <p id="unlock-hint"></p>
+                </div>
+                <div class="tab-content" id="environment-tab-content">
+                    <div id="env-grid"></div>
+                    <p id="env-unlock-hint"></p>
+                </div>
+                <button id="close-customize-button" class="action-button">Close</button>
+            </div>
+        </div>
+        <button id="customize-button">Customize</button>
     </div>
 
     <script>
@@ -143,7 +342,20 @@
             const currentScoreEl = document.getElementById('current-score');
             const highScoreEl = document.getElementById('high-score');
             const retryButton = document.getElementById('retry-button');
+            const shareButton = document.getElementById('share-button');
             const gameOverMessageEl = document.getElementById('game-over-message');
+            const customizeButton = document.getElementById('customize-button');
+            const confettiContainer = document.getElementById('confetti-container');
+            const customizeScreen = document.getElementById('customize-screen');
+            const appearanceGrid = document.getElementById('appearance-grid');
+            const unlockHint = document.getElementById('unlock-hint');
+            const closeCustomizeButton = document.getElementById('close-customize-button');
+            const unlockToast = document.getElementById('unlock-toast');
+            const customizeTabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const envGrid = document.getElementById('env-grid');
+            const envUnlockHint = document.getElementById('env-unlock-hint');
+
 
             // --- CONSTANTS ---
             const CANVAS_WIDTH = 360;
@@ -159,204 +371,364 @@
             const OBSTACLE_SPACING = 260;
             const MIN_OBSTACLE_GAP = 90;
             const MAX_OBSTACLE_GAP = 105;
+            const APPEARANCES = [
+                { shape: 'square', color: '#FFFFFF', unlock: { type: 'default' }, description: 'Default square' },
+                { shape: 'circle', color: '#FFFFFF', unlock: { type: 'score', value: 5 }, description: 'Score 5 points' },
+                { shape: 'triangle', color: '#FFFFFF', unlock: { type: 'score', value: 10 }, description: 'Score 10 points' },
+                { shape: 'hexagon', color: '#CCCCCC', unlock: { type: 'score', value: 20 }, description: 'Score 20 points' },
+                { shape: 'star', color: '#FFD700', unlock: { type: 'score', value: 30 }, description: 'Score 30 points', jumpEffect: { colors: ['#FFD700', '#FFA500'], count: 8, life: 0.5 } },
+                { shape: 'crystal', color: '#ADD8E6', unlock: { type: 'score', value: 50 }, description: 'Score 50 points', jumpEffect: { colors: ['#ADD8E6', '#FFFFFF'], count: 10, life: 0.6 } },
+                { shape: 'diamond', color: '#00FFFF', unlock: { type: 'score', value: 75 }, description: 'Score 75 points', jumpEffect: { colors: ['#00FFFF', '#00BFFF'], count: 12, life: 0.7 } },
+                { shape: 'phoenix', color: '#FF4500', unlock: { type: 'score', value: 100 }, description: 'Score 100 points', jumpEffect: { colors: ['#FF4500', '#FF6347', '#FFD700'], count: 15, life: 1.0 } },
+            ];
+            const ENV_REWARDS = [
+                { unlock: { type: 'default' }, description: 'Default Theme', obstacleColor: '#CCCCCC', bg: { type: 'solid', color: '#000000' } },
+                { unlock: { type: 'games', value: 3 }, description: 'Play 3 Games', obstacleColor: '#4A55A2', bg: { type: 'solid', color: '#000000' } },
+                { unlock: { type: 'games', value: 10 }, description: 'Play 10 Games', obstacleColor: '#4A55A2', bg: { type: 'stars', color: '#000000', count: 100 } },
+                { unlock: { type: 'games', value: 20 }, description: 'Play 20 Games', obstacleColor: '#7A4988', bg: { type: 'stars', color: '#000000', count: 100 } },
+                { unlock: { type: 'games', value: 30 }, description: 'Play 30 Games', obstacleColor: '#7A4988', bg: { type: 'parallax', color: '#050515', layers: [{ count: 50, speed: 0.2 }, { count: 30, speed: 0.4 }] } },
+                { unlock: { type: 'games', value: 40 }, description: 'Play 40 Games', obstacleColor: '#2E8B57', bg: { type: 'parallax', color: '#050515', layers: [{ count: 50, speed: 0.2 }, { count: 30, speed: 0.4 }] } },
+                { unlock: { type: 'games', value: 50 }, description: 'Play 50 Games', obstacleColor: '#2E8B57', bg: { type: 'gradient', colors: ['#0d1b2a', '#1b263b', '#415a77'] } },
+                { unlock: { type: 'games', value: 75 }, description: 'Play 75 Games', obstacleColor: '#E040FB', obstacleGlow: true, bg: { type: 'gradient', colors: ['#0d1b2a', '#1b263b', '#415a77'] } },
+                { unlock: { type: 'games', value: 100 }, description: 'Play 100 Games', obstacleColor: '#00F0FF', obstacleGlow: true, bg: { type: 'animated_gradient', colors: [['#0d1b2a', '#1b263b'], ['#415a77', '#778da9']] } },
+            ];
+
 
             // --- GAME STATE ---
             let gameState = 'Start'; // Start, Playing, GameOver
-            let score = 0;
-            let highScore = 0;
+            let score = 0, highScore = 0, gamesPlayed = 0;
+            let currentAppearanceIndex = 0, currentEnvIndex = 0;
+            let unlockedAppearances = new Array(APPEARANCES.length).fill(false);
+            let unlockedEnvs = new Array(ENV_REWARDS.length).fill(false);
+            unlockedAppearances[0] = true;
+            unlockedEnvs[0] = true;
+            
             try {
-                highScore = localStorage.getItem('jumpAndRunHighScore') || 0;
-            } catch (e) {
-                console.warn("Could not access localStorage. High scores will not be loaded.");
-            }
-            let player, obstacles, scoreBuffer, lastObstacleYCenter, lastTime;
+                highScore = parseInt(localStorage.getItem('jumpAndRunHighScore') || '0', 10);
+                gamesPlayed = parseInt(localStorage.getItem('jumpAndRunGamesPlayed') || '0', 10);
+                currentAppearanceIndex = parseInt(localStorage.getItem('jumpAndRunAppearance') || '0', 10);
+                currentEnvIndex = parseInt(localStorage.getItem('jumpAndRunEnv') || '0', 10);
+                
+                const savedUnlocks = JSON.parse(localStorage.getItem('jumpAndRunUnlocks') || 'null');
+                if (savedUnlocks) {
+                    for(let i = 0; i < unlockedAppearances.length; i++) {
+                        if(savedUnlocks[i]) unlockedAppearances[i] = true;
+                    }
+                }
+                const savedEnvUnlocks = JSON.parse(localStorage.getItem('jumpAndRunEnvUnlocks') || 'null');
+                 if (savedEnvUnlocks) {
+                    for(let i = 0; i < unlockedEnvs.length; i++) {
+                        if(savedEnvUnlocks[i]) unlockedEnvs[i] = true;
+                    }
+                }
+            } catch (e) { console.warn("Could not access localStorage. Progress will not be saved."); }
 
-            // Set canvas resolution
+            let player, obstacles, scoreBuffer, lastObstacleYCenter, lastTime;
+            let confettiParticles = [], jumpParticles = [], backgroundStars = [];
+
             canvas.width = CANVAS_WIDTH;
             canvas.height = CANVAS_HEIGHT;
 
+            function initializeBackground() {
+                backgroundStars = [];
+                const bg = ENV_REWARDS[currentEnvIndex].bg;
+                if(bg.type === 'stars' || bg.type === 'parallax') {
+                    const layers = bg.layers || [{count: bg.count, speed: 0}];
+                    layers.forEach(layer => {
+                        for(let i=0; i<layer.count; i++) {
+                            backgroundStars.push({
+                                x: Math.random() * CANVAS_WIDTH,
+                                y: Math.random() * CANVAS_HEIGHT,
+                                z: layer.speed, // z is repurposed for speed factor
+                                radius: Math.random() * 1.5 + 0.5
+                            });
+                        }
+                    });
+                }
+            }
+
             function resetGame() {
-                player = {
-                    x: PLAYER_START_X,
-                    y: PLAYER_START_Y,
-                    width: PLAYER_WIDTH,
-                    height: PLAYER_HEIGHT,
-                    velocityY: 0,
-                };
+                player = { x: PLAYER_START_X, y: PLAYER_START_Y, width: PLAYER_WIDTH, height: PLAYER_HEIGHT, velocityY: 0 };
                 obstacles = [];
                 score = 0;
                 scoreBuffer = 0;
                 lastObstacleYCenter = CANVAS_HEIGHT / 2;
+                
+                confettiContainer.innerHTML = '';
+                confettiParticles = [];
+                jumpParticles = [];
+
                 gameOverScreen.style.display = 'none';
+                customizeButton.style.display = 'none';
                 gameState = 'Playing';
                 lastTime = performance.now();
+                initializeBackground();
             }
 
+            function returnToStartScreen() {
+                confettiContainer.innerHTML = '';
+                confettiParticles = [];
+                jumpParticles = [];
+
+                gameOverScreen.style.display = 'none';
+                gameState = 'Start';
+                initializeBackground();
+            }
+            
+            function triggerJumpEffect(x, y, effect) {
+                for (let i = 0; i < effect.count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 150 + 50;
+                    jumpParticles.push({
+                        x: x, y: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 150,
+                        life: effect.life * (Math.random() * 0.5 + 0.75), maxLife: effect.life,
+                        color: effect.colors[Math.floor(Math.random() * effect.colors.length)],
+                        size: Math.random() * 3 + 2,
+                    });
+                }
+            }
+            
             function handleInput(e) {
                 e.preventDefault();
-                // This function handles input on the canvas for starting the game and jumping
                 if (gameState === 'Start') {
                     resetGame();
                 } else if (gameState === 'Playing') {
                     player.velocityY = JUMP_STRENGTH;
+                    const effect = APPEARANCES[currentAppearanceIndex].jumpEffect;
+                    if (effect) {
+                        triggerJumpEffect(player.x + player.width / 2, player.y + player.height, effect);
+                    }
                 }
             }
             
             function getGameOverMessage(score) {
-                let messages;
-                if (score <= 3) {
-                    messages = [
-                        "Was that a practice run?",
-                        "My grandma could beat that score.",
-                        "Did you confuse the screen with a wall?",
-                        "Gravity: 1, You: 0."
-                    ];
-                } else if (score <= 10) {
-                    messages = [
-                        "Okay, you're trying. Maybe.",
-                        "You're getting better at this whole 'game over' thing.",
-                        "That was... an attempt.",
-                        "Slightly better than a rock."
-                    ];
-                } else if (score <= 25) {
-                    messages = [
-                        "Not bad. For you.",
-                        "Hey, that was almost impressive.",
-                        "You're starting to get the hang of it.",
-                        "Respectable. I guess."
-                    ];
-                } else {
-                    messages = [
-                        "Are you a wizard?",
-                        "That was legendary!",
-                        "Okay, you can stop showing off now.",
-                        "New high score! You've officially peaked."
-                    ];
-                }
+                const messages = score <= 3 ? ["Was that a practice run?", "My grandma could beat that score.", "Did you confuse the screen with a wall?", "Gravity: 1, You: 0."]
+                             : score <= 10 ? ["Okay, you're trying. Maybe.", "You're getting better at this whole 'game over' thing.", "That was... an attempt.", "Slightly better than a rock."]
+                             : score <= 25 ? ["Not bad. For you.", "Hey, that was almost impressive.", "You're starting to get the hang of it.", "Respectable. I guess."]
+                             : ["Are you a wizard?", "That was legendary!", "Okay, you can stop showing off now.", "You've officially peaked."];
                 return messages[Math.floor(Math.random() * messages.length)];
             }
             
-            function showGameOverScreen() {
+            function showGameOverScreen(isNewHighScore) {
                 currentScoreEl.textContent = score;
                 highScoreEl.textContent = highScore;
-                gameOverMessageEl.textContent = getGameOverMessage(score);
+                gameOverMessageEl.textContent = isNewHighScore ? "NEW HIGH SCORE!" : getGameOverMessage(score);
+                if (isNewHighScore) triggerConfetti();
                 gameOverScreen.style.display = 'flex';
+                customizeButton.style.display = 'none';
             }
             
+            function showUnlockNotification() {
+                unlockToast.classList.add('show');
+                setTimeout(() => {
+                    unlockToast.classList.remove('show');
+                }, 3000);
+            }
+
+            function checkForUnlocks() {
+                let newUnlock = false;
+                APPEARANCES.forEach((appearance, index) => {
+                    if (!unlockedAppearances[index] && appearance.unlock.type === 'score' && score >= appearance.unlock.value) {
+                        unlockedAppearances[index] = true;
+                        newUnlock = true;
+                    }
+                });
+                if (newUnlock) {
+                    unlockToast.textContent = 'New Appearance Unlocked! ✨';
+                    try { localStorage.setItem('jumpAndRunUnlocks', JSON.stringify(unlockedAppearances)); } catch (e) {}
+                }
+                return newUnlock;
+            }
+
+            function checkForEnvUnlocks() {
+                let newUnlock = false;
+                ENV_REWARDS.forEach((env, index) => {
+                    if (!unlockedEnvs[index] && env.unlock.type === 'games' && gamesPlayed >= env.unlock.value) {
+                        unlockedEnvs[index] = true;
+                        newUnlock = true;
+                    }
+                });
+                if (newUnlock) {
+                    unlockToast.textContent = 'New Environment Unlocked! 🎨';
+                    try { localStorage.setItem('jumpAndRunEnvUnlocks', JSON.stringify(unlockedEnvs)); } catch (e) {}
+                }
+                return newUnlock;
+            }
+
             function update(deltaTime) {
                 if (gameState !== 'Playing') return;
 
-                // Player physics
                 player.velocityY += GRAVITY * deltaTime;
                 player.y += player.velocityY * deltaTime;
 
-                // Obstacle management
+                for (let i = jumpParticles.length - 1; i >= 0; i--) {
+                    const p = jumpParticles[i];
+                    p.vy += (GRAVITY / 4) * deltaTime; p.x += p.vx * deltaTime; p.y += p.vy * deltaTime; p.life -= deltaTime;
+                    if (p.life <= 0) jumpParticles.splice(i, 1);
+                }
+                
+                backgroundStars.forEach(star => {
+                    if(star.z > 0) { // Parallax effect
+                        star.x += OBSTACLE_SPEED * star.z * deltaTime;
+                        if (star.x < 0) star.x += CANVAS_WIDTH;
+                    }
+                });
+
                 const lastObstacle = obstacles[obstacles.length - 1];
                 if (!lastObstacle || lastObstacle.x < CANVAS_WIDTH - OBSTACLE_SPACING) {
                     const gap = Math.random() * (MAX_OBSTACLE_GAP - MIN_OBSTACLE_GAP) + MIN_OBSTACLE_GAP;
                     const verticalPadding = 50;
-                    
                     const minCenterY = gap / 2 + verticalPadding;
                     const maxCenterY = CANVAS_HEIGHT - gap / 2 - verticalPadding;
                     const newCenterY = Math.max(minCenterY, Math.min(maxCenterY, lastObstacleYCenter + (Math.random() - 0.5) * 500));
-
                     const obstacleY = newCenterY - gap / 2;
                     lastObstacleYCenter = newCenterY;
-
                     obstacles.push({ x: CANVAS_WIDTH, y: 0, width: OBSTACLE_WIDTH, height: obstacleY, passed: false });
                     obstacles.push({ x: CANVAS_WIDTH, y: obstacleY + gap, width: OBSTACLE_WIDTH, height: CANVAS_HEIGHT - obstacleY - gap, passed: false });
                 }
 
-                // Move and update obstacles
-                obstacles.forEach(obstacle => {
-                    obstacle.x += OBSTACLE_SPEED * deltaTime;
-                    if (!obstacle.passed && obstacle.x + obstacle.width < player.x) {
-                        obstacle.passed = true;
-                        scoreBuffer += 0.5; // Each pair of obstacles gives 1 point
+                obstacles.forEach(o => {
+                    o.x += OBSTACLE_SPEED * deltaTime;
+                    if (!o.passed && o.x + o.width < player.x) {
+                        o.passed = true;
+                        scoreBuffer += 0.5;
                     }
                 });
 
-                // Update score
                 score = Math.floor(scoreBuffer);
-
-                // Remove off-screen obstacles
                 obstacles = obstacles.filter(o => o.x + o.width > 0);
 
-                // Collision detection
-                let isGameOver = false;
-                if (player.y < 0 || player.y + player.height > CANVAS_HEIGHT) {
-                    isGameOver = true;
-                }
-                for (const obstacle of obstacles) {
-                    if (
-                        player.x < obstacle.x + obstacle.width &&
-                        player.x + player.width > obstacle.x &&
-                        player.y < obstacle.y + obstacle.height &&
-                        player.y + player.height > obstacle.y
-                    ) {
-                        isGameOver = true;
-                        break;
+                let isGameOver = (player.y < 0 || player.y + player.height > CANVAS_HEIGHT);
+                if (!isGameOver) {
+                    for (const o of obstacles) {
+                        if (player.x < o.x + o.width && player.x + player.width > o.x && player.y < o.y + o.height && player.y + player.height > o.y) {
+                            isGameOver = true;
+                            break;
+                        }
                     }
                 }
                 
                 if (isGameOver) {
-                    if (score > highScore) {
-                        highScore = score;
-                        try {
-                            localStorage.setItem('jumpAndRunHighScore', highScore);
-                        } catch (e) {
-                            console.warn("Could not access localStorage. High score was not saved.");
-                        }
-                    }
                     gameState = 'GameOver';
-                    showGameOverScreen();
+                    gamesPlayed++;
+                    let isNewHighScore = false;
+                    if (score > highScore) {
+                        isNewHighScore = true;
+                        highScore = score;
+                    }
 
-                    // Disable retry button for a moment to prevent accidental clicks
+                    const playerUnlocked = checkForUnlocks();
+                    const envUnlocked = checkForEnvUnlocks();
+                    if(playerUnlocked || envUnlocked) showUnlockNotification();
+                    
+                    try {
+                        localStorage.setItem('jumpAndRunHighScore', highScore);
+                        localStorage.setItem('jumpAndRunGamesPlayed', gamesPlayed);
+                    } catch (e) { console.warn("Could not save progress to localStorage."); }
+                    
+                    showGameOverScreen(isNewHighScore);
+
                     retryButton.disabled = true;
                     retryButton.classList.add('disabled');
-
                     setTimeout(() => {
                         retryButton.disabled = false;
                         retryButton.classList.remove('disabled');
-                    }, 1000); // 1-second delay before retry is possible
+                    }, 1000);
                 }
             }
+            
+            function drawPlayer(context, x, y, width, height, timestamp, appearanceIndex = currentAppearanceIndex) {
+                const appearance = APPEARANCES[appearanceIndex];
+                context.fillStyle = appearance.color;
+                context.save();
+                context.translate(x + width / 2, y + height / 2);
+
+                switch (appearance.shape) {
+                    case 'circle': context.beginPath(); context.arc(0, 0, width / 2, 0, Math.PI * 2); context.fill(); break;
+                    case 'triangle': context.beginPath(); context.moveTo(0, -height / 2); context.lineTo(-width / 2, height / 2); context.lineTo(width / 2, height / 2); context.closePath(); context.fill(); break;
+                    case 'hexagon': { const r = width / 2, a = Math.PI / 6; context.beginPath(); for (let i = 0; i < 6; i++) { context.lineTo(r*Math.cos(a+Math.PI/3*i), r*Math.sin(a+Math.PI/3*i)); } context.closePath(); context.fill(); break; }
+                    case 'star': { const s=5, oR=width/2, iR=width/4; let rot=Math.PI/2*3, step=Math.PI/s; context.beginPath(); context.moveTo(0, -oR); for (let i=0; i<s; i++) { context.lineTo(Math.cos(rot)*oR, Math.sin(rot)*oR); rot+=step; context.lineTo(Math.cos(rot)*iR, Math.sin(rot)*iR); rot+=step; } context.lineTo(0,-oR); context.closePath(); context.fill(); break; }
+                    case 'crystal': { const w=width*0.8, h=height, pH=h*0.3; context.beginPath(); context.moveTo(0,-h/2); context.lineTo(w/2,-h/2+pH); context.lineTo(w/2,h/2-pH); context.lineTo(0,h/2); context.lineTo(-w/2,h/2-pH); context.lineTo(-w/2,-h/2+pH); context.closePath(); context.fill(); break; }
+                    case 'diamond': { const p=Math.sin(timestamp*0.008)*2, w=width+p, h=height+p; context.beginPath(); context.moveTo(0,-h/2); context.lineTo(w/2,0); context.lineTo(0,h/2); context.lineTo(-w/2,0); context.closePath(); context.fill(); break; }
+                    case 'phoenix': { const w=width, h=height; context.beginPath(); context.moveTo(0,h/2); context.bezierCurveTo(-w,h*0.25,-w,-h*0.75,0,-h/2); context.bezierCurveTo(w,-h*0.75,w,h*0.25,0,h/2); context.closePath(); context.fill(); break; }
+                    default: context.fillRect(-width/2, -height/2, width, height); break;
+                }
+                context.restore();
+            }
+
+            function drawBackground(timestamp) {
+                const env = ENV_REWARDS[currentEnvIndex];
+                const bg = env.bg;
+                switch(bg.type) {
+                    case 'gradient': {
+                        const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+                        bg.colors.forEach((color, index) => gradient.addColorStop(index / (bg.colors.length - 1), color));
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                        break;
+                    }
+                    case 'animated_gradient': {
+                        const t = (Math.sin(timestamp * 0.0002) + 1) / 2; // Slow oscillation
+                        const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+                        const c1 = bg.colors[0], c2 = bg.colors[1];
+                        gradient.addColorStop(0, `rgb(${Math.lerp(parseInt(c1[0].slice(1,3),16),parseInt(c2[0].slice(1,3),16),t)}, ${Math.lerp(parseInt(c1[0].slice(3,5),16),parseInt(c2[0].slice(3,5),16),t)}, ${Math.lerp(parseInt(c1[0].slice(5,7),16),parseInt(c2[0].slice(5,7),16),t)})`);
+                        gradient.addColorStop(1, `rgb(${Math.lerp(parseInt(c1[1].slice(1,3),16),parseInt(c2[1].slice(1,3),16),t)}, ${Math.lerp(parseInt(c1[1].slice(3,5),16),parseInt(c2[1].slice(3,5),16),t)}, ${Math.lerp(parseInt(c1[1].slice(5,7),16),parseInt(c2[1].slice(5,7),16),t)})`);
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                        break;
+                    }
+                    case 'stars':
+                    case 'parallax':
+                        ctx.fillStyle = bg.color;
+                        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                        ctx.fillStyle = '#FFFFFF';
+                        backgroundStars.forEach(star => {
+                            ctx.beginPath();
+                            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                            ctx.fill();
+                        });
+                        break;
+                    case 'solid':
+                    default:
+                        ctx.fillStyle = bg.color;
+                        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                        break;
+                }
+            }
+            Math.lerp = (a, b, t) => a + (b - a) * t;
 
             function draw(timestamp) {
-                // Background
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
+                ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                drawBackground(timestamp);
+                
                 if (gameState === 'Start') {
                     drawText("Jump", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 4 - 35, 60, '800');
                     drawText("& Run", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 4 + 35, 60, '800');
-                    
-                    // Animate player character bobbing up and down
-                    const bobbingAmplitude = 10;
-                    const bobbingFrequency = 0.002;
-                    const playerCenterY = CANVAS_HEIGHT / 2 - 20; // Move it up a bit
-                    const playerBobbingY = playerCenterY + bobbingAmplitude * Math.sin(timestamp * bobbingFrequency);
-
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2, playerBobbingY, PLAYER_WIDTH, PLAYER_HEIGHT);
-                    
-                    drawText("Tap to Play", CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.75, 24);
+                    const bobbingY = (CANVAS_HEIGHT / 2 - 20) + 10 * Math.sin(timestamp * 0.002);
+                    drawPlayer(ctx, CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2, bobbingY, PLAYER_WIDTH, PLAYER_HEIGHT, timestamp);
+                    drawText("Tap to Play", CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.85, 24);
+                    customizeButton.style.display = 'block';
                     return;
                 }
 
-                // Draw obstacles
-                ctx.fillStyle = '#CCCCCC';
-                obstacles.forEach(obstacle => {
-                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                });
-
-                // Draw player
-                ctx.fillStyle = '#FFFFFF';
-                if (player) { // Ensure player exists before drawing
-                    ctx.fillRect(player.x, player.y, player.width, player.height);
+                const env = ENV_REWARDS[currentEnvIndex];
+                if(env.obstacleGlow) {
+                    ctx.shadowColor = env.obstacleColor;
+                    ctx.shadowBlur = 15;
                 }
+                ctx.fillStyle = env.obstacleColor;
+                obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.width, o.height));
+                ctx.shadowBlur = 0; // Reset shadow
+
+                jumpParticles.forEach(p => {
+                    ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+                });
+                ctx.globalAlpha = 1.0;
+
+                if (player) drawPlayer(ctx, player.x, player.y, player.width, player.height, timestamp);
                 
-                // Draw Score during play
                 if (gameState === 'Playing') {
                     ctx.globalAlpha = 0.4;
                     drawText(score, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 4, 100, '800');
@@ -373,42 +745,168 @@
             }
 
             function gameLoop(timestamp) {
-                if (!lastTime) {
-                    lastTime = timestamp;
-                }
-                const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1); // Clamp delta time
+                if (!lastTime) lastTime = timestamp;
+                const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1);
                 lastTime = timestamp;
-                
                 update(deltaTime);
-                draw(timestamp); // Pass timestamp for animations
-                
+                draw(timestamp);
                 requestAnimationFrame(gameLoop);
             }
+            
+            function triggerConfetti() {
+                confettiContainer.innerHTML = '';
+                confettiParticles = [];
+                const CONFETTI_COLORS = ['#FFD700', '#FF69B4', '#00BFFF', '#ADFF2F', '#FFA500'];
+                for (let i = 0; i < 100; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti-piece'; el.style.backgroundColor = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+                    confettiContainer.appendChild(el);
+                    confettiParticles.push({ el, x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 3, vx: Math.random() * 800 - 400, vy: Math.random() * 400 - 800, rot: Math.random() * 360, rotSpeed: Math.random() * 200 - 100 });
+                }
+                let lastConfettiTime = null;
+                function animate(timestamp) {
+                    if (!lastConfettiTime) lastConfettiTime = timestamp;
+                    const dt = (timestamp - lastConfettiTime) / 1000;
+                    lastConfettiTime = timestamp;
+                    for (let i = confettiParticles.length - 1; i >= 0; i--) {
+                        const p = confettiParticles[i];
+                        p.vy += 1200 * dt; p.vx *= 0.99; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.rotSpeed * dt;
+                        if (p.y > CANVAS_HEIGHT) confettiParticles.splice(i, 1);
+                        else p.el.style.transform = `translate(${p.x-4}px, ${p.y-8}px) rotate(${p.rot}deg)`;
+                    }
+                    if (confettiParticles.length > 0) requestAnimationFrame(animate); else confettiContainer.innerHTML = '';
+                }
+                requestAnimationFrame(animate);
+            }
+
+            // --- CUSTOMIZE MODAL LOGIC ---
+            function renderPlayerCustomizeModal() {
+                appearanceGrid.innerHTML = '';
+                unlockHint.textContent = 'Select an item';
+                APPEARANCES.forEach((appearance, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'appearance-item';
+                    const isUnlocked = unlockedAppearances[index];
+                    item.classList.toggle('locked', !isUnlocked);
+                    item.classList.toggle('selected', index === currentAppearanceIndex);
+                    
+                    if (!isUnlocked) {
+                        const lockIcon = document.createElement('span'); lockIcon.className = 'lock-icon'; lockIcon.textContent = '🔒'; item.appendChild(lockIcon);
+                    } else {
+                        const canvasEl = document.createElement('canvas'); canvasEl.width=60; canvasEl.height=60;
+                        const itemCtx = canvasEl.getContext('2d');
+                        // Draw the player shape centered in the 60x60 canvas
+                        drawPlayer(itemCtx, 15, 15, 30, 30, 0, index);
+                        item.appendChild(canvasEl);
+                    }
+
+                    item.addEventListener('click', () => {
+                        if (isUnlocked) {
+                            currentAppearanceIndex = index;
+                            try { localStorage.setItem('jumpAndRunAppearance', index); } catch(e) {}
+                            renderPlayerCustomizeModal();
+                            unlockHint.textContent = appearance.description || 'Selected!';
+                        } else { unlockHint.textContent = `Unlock: ${appearance.description}`; }
+                    });
+                    appearanceGrid.appendChild(item);
+                });
+            }
+
+            function renderEnvCustomizeModal() {
+                envGrid.innerHTML = '';
+                envUnlockHint.textContent = 'Select a theme';
+                ENV_REWARDS.forEach((env, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'appearance-item';
+                    const isUnlocked = unlockedEnvs[index];
+                    item.classList.toggle('locked', !isUnlocked);
+                    item.classList.toggle('selected', index === currentEnvIndex);
+
+                    if (!isUnlocked) {
+                        const lockIcon = document.createElement('span'); lockIcon.className = 'lock-icon'; lockIcon.textContent = '🔒'; item.appendChild(lockIcon);
+                    } else {
+                        const canvasEl = document.createElement('canvas'); canvasEl.width=60; canvasEl.height=60;
+                        const itemCtx = canvasEl.getContext('2d');
+                        // Draw mini background
+                        switch (env.bg.type) {
+                            case 'gradient': case 'animated_gradient': {
+                                const grad = itemCtx.createLinearGradient(0,0,0,60);
+                                const colors = env.bg.type === 'animated_gradient' ? env.bg.colors[0] : env.bg.colors;
+                                colors.forEach((c, i) => grad.addColorStop(i/(colors.length-1), c));
+                                itemCtx.fillStyle = grad;
+                                break;
+                            }
+                            default: itemCtx.fillStyle = env.bg.color;
+                        }
+                        itemCtx.fillRect(0,0,60,60);
+                        if (env.bg.type === 'stars' || env.bg.type === 'parallax') {
+                           itemCtx.fillStyle = '#FFF';
+                           for(let i=0; i<15; i++) itemCtx.fillRect(Math.random()*60, Math.random()*60, 1, 1);
+                        }
+                        // Draw mini obstacle
+                        if (env.obstacleGlow) {
+                            itemCtx.shadowColor = env.obstacleColor; itemCtx.shadowBlur = 5;
+                        }
+                        itemCtx.fillStyle = env.obstacleColor;
+                        itemCtx.fillRect(25, 10, 10, 40);
+                        itemCtx.shadowBlur = 0;
+                        item.appendChild(canvasEl);
+                    }
+                    item.addEventListener('click', () => {
+                        if (isUnlocked) {
+                            currentEnvIndex = index;
+                            try { localStorage.setItem('jumpAndRunEnv', index); } catch(e) {}
+                            renderEnvCustomizeModal();
+                            envUnlockHint.textContent = env.description || 'Selected!';
+                        } else { envUnlockHint.textContent = `Unlock: ${env.description}`; }
+                    });
+                    envGrid.appendChild(item);
+                });
+            }
+
 
             // --- EVENT LISTENERS ---
             canvas.addEventListener('mousedown', handleInput);
             canvas.addEventListener('touchstart', handleInput, { passive: false });
-            
-            retryButton.addEventListener('click', () => {
-                if (gameState === 'GameOver' && !retryButton.disabled) {
-                    resetGame();
+            retryButton.addEventListener('click', () => !retryButton.disabled && returnToStartScreen());
+            shareButton.addEventListener('click', () => {
+                const text = `I scored ${score} in Jump & Run! Can you beat it?`; const url = window.location.href;
+                if (navigator.share) { navigator.share({ title: 'Jump & Run', text, url }).catch(console.error);
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(`${text}\n\nPlay here: ${url}`).then(() => {
+                        const originalText = shareButton.textContent; shareButton.textContent = 'Copied!';
+                        setTimeout(() => { shareButton.textContent = originalText; }, 2000);
+                    }).catch(console.error);
                 }
             });
-
+            customizeButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                renderPlayerCustomizeModal();
+                renderEnvCustomizeModal();
+                customizeScreen.style.display = 'flex';
+            });
+            closeCustomizeButton.addEventListener('click', () => {
+                customizeScreen.style.display = 'none';
+                initializeBackground(); // Apply selected theme on close
+            });
+            customizeTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    customizeTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.toggle('active', content.id === `${tab.dataset.tab}-tab-content`);
+                    });
+                });
+            });
             window.addEventListener('keydown', (e) => {
                 if (e.code === 'Space') {
                     e.preventDefault();
-                    if (gameState === 'Start') {
-                        resetGame();
-                    } else if (gameState === 'GameOver' && !retryButton.disabled) {
-                        resetGame();
-                    } else if (gameState === 'Playing') {
-                        player.velocityY = JUMP_STRENGTH;
-                    }
+                    if (gameState === 'GameOver' && !retryButton.disabled) { returnToStartScreen(); } else { handleInput(e); }
                 }
             });
-
+            
             // --- START GAME ---
+            initializeBackground();
             requestAnimationFrame(gameLoop);
         })();
     </script>
