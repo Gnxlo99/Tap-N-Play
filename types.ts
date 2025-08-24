@@ -9,4 +9,5 @@ export interface Game {
   description: string;
   playUrl: string;
   instructions: string;
+  aspectRatio?: string;
 }
