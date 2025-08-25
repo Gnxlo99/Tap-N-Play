@@ -9,15 +9,17 @@
     :root {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
+    html, body {
+      height: 100%;
+    }
     body {
       margin: 0;
-      min-height: 100vh;
       background-color: #0f172a; /* bg-slate-900 */
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* padding: 1rem; */ /* Removed for better iframe fitting */
+      padding: 1rem;
       box-sizing: border-box;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -28,19 +30,38 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       width: 100%;
-      max-width: 500px;
-      padding: 1rem; /* Added padding here */
-      box-sizing: border-box; /* Ensures padding is included in width */
+      max-width: 736px; /* Increased by ~15% from 640px */
+      flex-grow: 1;
+    }
+
+    /* Start Screen */
+    #start-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    /* Game Screen */
+    #game-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
     }
 
     /* Header */
     header {
       text-align: center;
-      margin-bottom: 1rem; /* Reduced from 2rem */
+      margin-bottom: 1rem;
     }
     h1 {
-      font-size: 2.5rem; /* Reduced from 3rem */
+      font-size: 3rem; /* text-5xl */
       font-weight: 800; /* font-extrabold */
       margin: 0 0 0.5rem 0;
       letter-spacing: -0.025em;
@@ -52,29 +73,29 @@
       color: transparent;
     }
     header p {
-      font-size: 1rem; /* Reduced from 1.125rem */
+      font-size: 1.125rem; /* text-lg */
       color: #94a3b8; /* text-slate-400 */
-      margin: 0;
+      margin: 0 auto;
+      max-width: 40ch;
     }
 
-    /* Controls & Score */
-    .controls {
+    /* Game Info & Score */
+    .game-info {
       display: flex;
-      flex-wrap: wrap;
-      align-items: stretch;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem; /* Reduced from 2rem */
+      justify-content: center; /* Centered items */
+      align-items: center;
+      gap: 1.5rem; /* Increased gap for better spacing */
+      margin-bottom: 2rem;
       width: 100%;
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
     }
     .score-box {
       padding: 1rem;
-      background-color: #1e293b; /* bg-slate-800 */
+      background: linear-gradient(135deg, #334155, #1e293b);
       border-radius: 0.75rem; /* rounded-xl */
       box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
       text-align: center;
-      min-width: 8rem; /* w-32 */
-      flex-grow: 1;
+      min-width: 10rem; /* w-40 */
     }
     .score-box .label {
       text-transform: uppercase;
@@ -83,7 +104,7 @@
       color: #94a3b8; /* text-slate-400 */
     }
     .score-box .value {
-      font-size: 2rem; /* Reduced from 2.25rem */
+      font-size: 2.25rem; /* text-4xl */
       font-weight: 700; /* font-bold */
       margin-top: 0.25rem;
       line-height: 1;
@@ -92,8 +113,15 @@
     .button-group {
       display: flex;
       gap: 1rem;
-      flex-grow: 1;
+      justify-content: center;
+      max-width: 345px; /* Increased by ~15% */
+      width: 100%;
     }
+    .game-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
 
     /* Buttons */
     .button {
@@ -108,6 +136,12 @@
       flex-grow: 1;
       text-align: center;
     }
+    /* Smaller buttons for in-game controls */
+    .game-controls .button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
     .new-game-button {
       background-image: linear-gradient(to right, #a855f7, #ec4899, #f97316);
       box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.4);
@@ -128,6 +162,63 @@
       background-color: #475569; /* bg-slate-600 */
     }
 
+    .restart-button-style {
+      background-image: linear-gradient(to right, #f97316, #facc15);
+      box-shadow: 0 8px 15px -5px rgba(249, 115, 22, 0.4);
+    }
+    .restart-button-style:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(249, 115, 22, 0.5);
+    }
+    .restart-button-style:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 8px -3px rgba(249, 115, 22, 0.4);
+    }
+
+    .main-menu-button-style {
+      background-image: linear-gradient(to right, #4f46e5, #a855f7);
+      box-shadow: 0 8px 15px -5px rgba(79, 70, 229, 0.4);
+    }
+    .main-menu-button-style:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.5);
+    }
+    .main-menu-button-style:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 8px -3px rgba(79, 70, 229, 0.4);
+    }
+
+    /* Game Board Preview (Start Screen) */
+    .game-board-preview-container {
+        margin: 2rem 0;
+        perspective: 800px;
+        width: 100%;
+        max-width: 322px; /* Increased by ~15% */
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .game-board-preview {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background-color: rgba(51, 65, 85, 0.5);
+        border-radius: 1rem;
+        transform: rotateX(20deg) rotateY(-25deg) translateZ(-20px);
+        box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.4);
+        transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        aspect-ratio: 1 / 1;
+    }
+    .game-board-preview-container:hover .game-board-preview {
+        transform: rotateX(0deg) rotateY(0deg) translateZ(0px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    .game-board-preview .tile {
+        border-radius: 0.75rem;
+        font-size: clamp(1rem, 8vw, 1.75rem);
+    }
+
     /* Game Board */
     .game-board-container {
       position: relative;
@@ -139,8 +230,8 @@
     .game-board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.75rem; /* Reduced from 1rem */
-      padding: 0.75rem; /* Reduced from 1rem */
+      gap: 1rem;
+      padding: 1rem;
       background-color: rgba(51, 65, 85, 0.5);
       border-radius: 1rem;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -154,11 +245,11 @@
       aspect-ratio: 1 / 1;
       width: 100%;
       height: auto;
-      border-radius: 0.5rem;
+      border-radius: 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.25rem, 5vw, 2.25rem);
+      font-size: clamp(1.5rem, 6vw, 3rem);
       font-weight: 700;
       transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
       color: #0f172a;
@@ -197,18 +288,26 @@
       background-color: rgba(15, 23, 42, 0.85);
       justify-content: center;
       align-items: center;
-      text-align: center; /* Added for robust centering */
+      text-align: center;
       border-radius: 1rem;
       z-index: 10;
       animation: fadeIn 0.5s ease-in-out;
-      font-size: 3rem;
-      font-weight: 800;
-      color: white;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
       display: none; /* Hidden by default */
     }
     .game-over-overlay.visible {
       display: flex;
+    }
+    .game-over-overlay > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .game-over-text {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
     }
 
     @keyframes fadeIn {
@@ -278,35 +377,72 @@
 
     /* Responsive */
     @media (max-width: 600px) {
-      h1 { font-size: 2.25rem; } /* Reduced from 2.5rem */
-      .button-group { flex-direction: column; width: 100%;}
+      h1 { font-size: 2.5rem; }
+      #start-screen .button-group { flex-direction: column; width: 100%; max-width: 322px;}
     }
   </style>
 </head>
 <body>
   <div class="app-container">
-    <header>
-      <h1><span class="gradient-text">Number Merge</span></h1>
-      <p>Merge the numbers to reach the highest tile!</p>
-    </header>
 
-    <div class="controls">
-      <div class="score-box">
-        <div class="label">Score</div>
-        <div id="score-value" class="value">0</div>
+    <div id="start-screen">
+      <header>
+        <h1><span class="gradient-text">Number Merge</span></h1>
+        <p>Merge the numbers to reach the highest tile!</p>
+      </header>
+
+      <div class="game-board-preview-container">
+        <div class="game-board-preview">
+            <div class="tile tile-2">2</div>
+            <div class="tile tile-4">4</div>
+            <div class="tile tile-0"></div>
+            <div class="tile tile-8">8</div>
+            <div class="tile tile-4">4</div>
+            <div class="tile tile-16">16</div>
+            <div class="tile tile-2">2</div>
+            <div class="tile tile-0"></div>
+            <div class="tile tile-0"></div>
+            <div class="tile tile-8">8</div>
+            <div class="tile tile-32">32</div>
+            <div class="tile tile-2">2</div>
+            <div class="tile tile-16">16</div>
+            <div class="tile tile-64">64</div>
+            <div class="tile tile-0"></div>
+            <div class="tile tile-4">4</div>
+        </div>
       </div>
+
       <div class="button-group">
-        <button id="how-to-play-button" class="button how-to-play-button">How to Play</button>
         <button id="new-game-button" class="button new-game-button">New Game</button>
+        <button id="how-to-play-button" class="button how-to-play-button">How to Play</button>
       </div>
     </div>
 
-    <main>
-      <div class="game-board-container">
-        <div id="game-over-overlay" class="game-over-overlay">Game Over!</div>
-        <div id="game-board" class="game-board"></div>
-      </div>
-    </main>
+    <div id="game-screen" style="display: none;">
+        <header>
+            <h1><span class="gradient-text">Number Merge</span></h1>
+        </header>
+        <div class="game-info">
+            <div class="score-box">
+                <div class="label">Score</div>
+                <div id="score-value" class="value">0</div>
+            </div>
+            <div class="game-controls">
+                <button id="restart-button" class="button restart-button-style">Restart</button>
+                <button id="main-menu-button" class="button main-menu-button-style">Main Menu</button>
+            </div>
+        </div>
+        <main>
+            <div class="game-board-container">
+            <div id="game-over-overlay" class="game-over-overlay">
+                <div>
+                    <div class="game-over-text">Game Over!</div>
+                </div>
+            </div>
+            <div id="game-board" class="game-board"></div>
+            </div>
+        </main>
+    </div>
   </div>
 
   <div id="how-to-play-modal" class="modal-overlay">
@@ -325,6 +461,7 @@
       let isGameOver = false;
       let newTileAddedAt = null;
 
+      // Element references
       const gameBoardEl = document.getElementById('game-board');
       const scoreValueEl = document.getElementById('score-value');
       const newGameButton = document.getElementById('new-game-button');
@@ -333,6 +470,11 @@
       const modal = document.getElementById('how-to-play-modal');
       const closeModalButton = document.getElementById('close-modal-button');
       const gameBoardContainer = document.querySelector('.game-board-container');
+      const startScreen = document.getElementById('start-screen');
+      const gameScreen = document.getElementById('game-screen');
+      const restartButton = document.getElementById('restart-button');
+      const mainMenuButton = document.getElementById('main-menu-button');
+
 
       function startNewGame() {
         board = Array.from({ length: boardSize }, () => Array(boardSize).fill(0));
@@ -357,13 +499,12 @@
             tile.className = `tile tile-${value}`;
             tile.textContent = value > 0 ? value : '';
             
-            // Adjust font size for larger numbers
             if (value >= 10000) {
-              tile.style.fontSize = 'clamp(0.75rem, 3vw, 1.25rem)';
+              tile.style.fontSize = 'clamp(1rem, 4vw, 1.75rem)';
             } else if (value >= 1024) {
-              tile.style.fontSize = 'clamp(1rem, 4vw, 1.5rem)';
+              tile.style.fontSize = 'clamp(1.25rem, 5vw, 2.25rem)';
             } else if (value >= 128) {
-              tile.style.fontSize = 'clamp(1.1rem, 4.5vw, 1.75rem)';
+              tile.style.fontSize = 'clamp(1.4rem, 5.5vw, 2.75rem)';
             }
 
             if (localNewTileCoords && localNewTileCoords.r === r && localNewTileCoords.c === c) {
@@ -387,7 +528,7 @@
 
         if (emptyTiles.length > 0) {
           const { r, c } = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
-          board[r][c] = Math.random() < 0.9 ? 2 : 4; // 90% chance of 2, 10% chance of 4
+          board[r][c] = Math.random() < 0.9 ? 2 : 4;
           newTileAddedAt = { r, c };
         }
       }
@@ -493,23 +634,15 @@
             return;
         }
 
-        switch (e.key) {
-          case 'ArrowUp':
+        const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        if (validKeys.includes(e.key)) {
             e.preventDefault();
-            moveUp(); 
-            break;
-          case 'ArrowDown':
-            e.preventDefault();
-            moveDown(); 
-            break;
-          case 'ArrowLeft':
-            e.preventDefault();
-            moveLeft(); 
-            break;
-          case 'ArrowRight':
-            e.preventDefault();
-            moveRight(); 
-            break;
+            switch (e.key) {
+                case 'ArrowUp': moveUp(); break;
+                case 'ArrowDown': moveDown(); break;
+                case 'ArrowLeft': moveLeft(); break;
+                case 'ArrowRight': moveRight(); break;
+            }
         }
       }
 
@@ -527,13 +660,13 @@
         let touchStartY = 0;
 
         gameBoardContainer.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 1) return; // Ignore multi-touch
+            if (e.touches.length > 1) return;
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
         }, { passive: true });
 
         gameBoardContainer.addEventListener('touchmove', (e) => {
-            if (touchStartX !== 0) { // If a swipe has started
+            if (touchStartX !== 0) {
                 e.preventDefault();
             }
         }, { passive: false });
@@ -566,6 +699,21 @@
         });
       }
 
+      // --- Event Listeners ---
+      newGameButton.addEventListener('click', () => {
+        startScreen.style.display = 'none';
+        gameScreen.style.display = 'flex';
+        startNewGame();
+      });
+
+      restartButton.addEventListener('click', startNewGame);
+
+      mainMenuButton.addEventListener('click', () => {
+        gameScreen.style.display = 'none';
+        startScreen.style.display = 'flex';
+        gameOverOverlay.classList.remove('visible');
+      });
+
       howToPlayButton.addEventListener('click', openModal);
       closeModalButton.addEventListener('click', closeModal);
       modal.addEventListener('click', (event) => {
@@ -575,9 +723,7 @@
       });
       
       window.addEventListener('keydown', handleKeyDown);
-      newGameButton.addEventListener('click', startNewGame);
-
-      startNewGame();
+      
       setupTouchControls();
     });
   </script>
