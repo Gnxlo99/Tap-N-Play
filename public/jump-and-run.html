@@ -380,6 +380,7 @@
                 { shape: 'crystal', color: '#ADD8E6', unlock: { type: 'score', value: 50 }, description: 'Score 50 points', jumpEffect: { colors: ['#ADD8E6', '#FFFFFF'], count: 10, life: 0.6 } },
                 { shape: 'diamond', color: '#00FFFF', unlock: { type: 'score', value: 75 }, description: 'Score 75 points', jumpEffect: { colors: ['#00FFFF', '#00BFFF'], count: 12, life: 0.7 } },
                 { shape: 'rotating_color_square', color: '#FF5733', unlock: { type: 'score', value: 100 }, description: 'Score 100 points', jumpEffect: { colors: ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#F4FF33', '#33FFF1'], count: 20, life: 1.0 } },
+                { shape: 'cosmic_entity', color: '#9400D3', unlock: { type: 'score', value: 1000 }, description: 'Score 1000 points', jumpEffect: { colors: ['#E0BBE4', '#957DAD', '#FFFFFF', '#FEC8D8'], count: 15, life: 1.2, minSpeed: 20, speedRange: 60, boost: -100, minSize: 1, sizeRange: 2 } },
             ];
             const ENV_REWARDS = [
                 { unlock: { type: 'default' }, description: 'Default Theme', obstacleColor: '#CCCCCC', bg: { type: 'solid', color: '#000000' } },
@@ -476,14 +477,28 @@
             }
             
             function triggerJumpEffect(x, y, effect) {
-                for (let i = 0; i < effect.count; i++) {
+                const pCount = effect.count;
+                const pLife = effect.life;
+                const pColors = effect.colors;
+                
+                // New optional parameters for more customizable effects
+                const minSpeed = effect.minSpeed || 50;
+                const speedRange = effect.speedRange || 150;
+                const boost = effect.boost || -150;
+                const minSize = effect.minSize || 2;
+                const sizeRange = effect.sizeRange || 3;
+
+                for (let i = 0; i < pCount; i++) {
                     const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 150 + 50;
+                    const speed = Math.random() * speedRange + minSpeed;
+                    const size = Math.random() * sizeRange + minSize;
                     jumpParticles.push({
-                        x: x, y: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 150,
-                        life: effect.life * (Math.random() * 0.5 + 0.75), maxLife: effect.life,
-                        color: effect.colors[Math.floor(Math.random() * effect.colors.length)],
-                        size: Math.random() * 3 + 2,
+                        x: x, y: y, 
+                        vx: Math.cos(angle) * speed, 
+                        vy: Math.sin(angle) * speed + boost,
+                        life: pLife * (Math.random() * 0.5 + 0.75), maxLife: pLife,
+                        color: pColors[Math.floor(Math.random() * pColors.length)],
+                        size: size,
                     });
                 }
             }
@@ -496,7 +511,7 @@
                     player.velocityY = JUMP_STRENGTH;
                     const effect = APPEARANCES[currentAppearanceIndex].jumpEffect;
                     if (effect) {
-                        triggerJumpEffect(player.x + player.width / 2, player.y + player.height, effect);
+                        triggerJumpEffect(player.x + player.width / 2, player.y + player.height / 2, effect);
                     }
                 }
             }
@@ -505,7 +520,8 @@
                 const messages = score <= 3 ? ["Was that a practice run?", "My grandma could beat that score.", "Did you confuse the screen with a wall?", "Gravity: 1, You: 0."]
                              : score <= 10 ? ["Okay, you're trying. Maybe.", "You're getting better at this whole 'game over' thing.", "That was... an attempt.", "Slightly better than a rock."]
                              : score <= 25 ? ["Not bad. For you.", "Hey, that was almost impressive.", "You're starting to get the hang of it.", "Respectable. I guess."]
-                             : ["Are you a wizard?", "That was legendary!", "Okay, you can stop showing off now.", "You've officially peaked."];
+                             : score <= 100 ? ["Are you a wizard?", "That was legendary!", "Okay, you can stop showing off now.", "You've officially peaked."]
+                             : ["You are a legend.", "Is this even possible?!", "The game is broken. You won.", "GOAT."];
                 return messages[Math.floor(Math.random() * messages.length)];
             }
             
@@ -657,6 +673,42 @@
                         }
                         context.rotate(timestamp * 0.005);
                         context.fillRect(-width/2, -height/2, width, height);
+                        break;
+                    }
+                    case 'cosmic_entity': {
+                        const coreSize = (width / 4) + Math.sin(timestamp * 0.003) * 2;
+                        const glowSize = (width / 2) + Math.sin(timestamp * 0.002) * 4;
+
+                        // Outer glow
+                        const gradient = context.createRadialGradient(0, 0, coreSize, 0, 0, glowSize);
+                        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                        gradient.addColorStop(0.4, 'rgba(173, 216, 230, 0.5)');
+                        gradient.addColorStop(1, 'rgba(148, 0, 211, 0)');
+                        context.fillStyle = gradient;
+                        context.beginPath();
+                        context.arc(0, 0, glowSize, 0, Math.PI * 2);
+                        context.fill();
+
+                        // Pulsing core
+                        context.fillStyle = `rgba(255, 255, 255, ${0.8 + Math.sin(timestamp * 0.003) * 0.2})`;
+                        context.beginPath();
+                        context.arc(0, 0, coreSize, 0, Math.PI * 2);
+                        context.shadowColor = '#FFFFFF';
+                        context.shadowBlur = 15;
+                        context.fill();
+                        context.shadowBlur = 0;
+
+                        // Orbiting particles
+                        context.fillStyle = '#FFFFFF';
+                        for (let i = 0; i < 4; i++) {
+                            const angle = timestamp * 0.001 * (i % 2 === 0 ? 1 : -1) + (i * Math.PI / 2);
+                            const distance = width/2 + 2 + Math.sin(timestamp * 0.004 + i) * 2;
+                            const xPos = Math.cos(angle) * distance;
+                            const yPos = Math.sin(angle) * distance;
+                            context.beginPath();
+                            context.arc(xPos, yPos, 1.5 + Math.sin(timestamp * 0.005 + i), 0, Math.PI * 2);
+                            context.fill();
+                        }
                         break;
                     }
                     default: context.fillRect(-width/2, -height/2, width, height); break;
