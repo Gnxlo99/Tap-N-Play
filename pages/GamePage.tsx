@@ -22,19 +22,22 @@ const GamePage: React.FC = () => {
 
   const gameAspectRatio = game.aspectRatio || '9 / 16';
   const isSquareGame = gameAspectRatio === '1 / 1';
+  const gameWidth = game.nativeWidth || (isSquareGame ? 500 : 360);
 
   const containerClasses = isSquareGame
     ? 'flex flex-col items-center gap-8'
     : 'flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-12';
 
-  const gameColumnClasses = `w-full ${isSquareGame ? 'max-w-[500px]' : 'max-w-[360px]'} flex-shrink-0`;
+  const gameColumnStyles: React.CSSProperties = {
+    maxWidth: `${gameWidth}px`,
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className={containerClasses}>
         
         {/* Game Column */}
-        <div className={gameColumnClasses}>
+        <div className="w-full flex-shrink-0" style={gameColumnStyles}>
            <div className="relative bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" style={{ aspectRatio: gameAspectRatio }}>
               <iframe
                 src={game.playUrl}
