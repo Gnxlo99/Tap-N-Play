@@ -32,7 +32,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-width: 884px; /* Increased by 20% from 736px */
+      max-width: 640px; /* Reverted to base size */
       flex-grow: 1;
     }
 
@@ -114,7 +114,7 @@
       display: flex;
       gap: 1rem;
       justify-content: center;
-      max-width: 414px; /* Increased by 20% */
+      max-width: 345px; /* Reverted to base size */
       width: 100%;
     }
     .game-controls {
@@ -193,7 +193,7 @@
         margin: 2rem 0;
         perspective: 800px;
         width: 100%;
-        max-width: 386px; /* Increased by 20% */
+        max-width: 322px; /* Reverted to base size */
         -webkit-user-select: none;
         -ms-user-select: none;
         user-select: none;
@@ -226,6 +226,8 @@
       -webkit-user-select: none; /* Safari */
       -ms-user-select: none; /* IE 10+ */
       user-select: none;
+      transform: scale(1.2); /* Make board 20% larger */
+      margin: 3rem 0 2rem 0; /* Add vertical margin for the scaled board */
     }
     .game-board {
       display: grid;
@@ -378,7 +380,7 @@
     /* Responsive */
     @media (max-width: 600px) {
       h1 { font-size: 2.5rem; }
-      #start-screen .button-group { flex-direction: column; width: 100%; max-width: 386px;}
+      #start-screen .button-group { flex-direction: column; width: 100%; max-width: 345px;}
     }
   </style>
 </head>
