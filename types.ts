@@ -10,4 +10,5 @@ export interface Game {
   playUrl: string;
   instructions: string;
   aspectRatio?: string;
+  nativeWidth?: number;
 }
