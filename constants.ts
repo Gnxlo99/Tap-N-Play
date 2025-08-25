@@ -38,7 +38,7 @@ const NUMBER_MERGE_GAME: Game = {
   description: 'A captivating puzzle game where you slide and combine numbered tiles to reach the highest possible number. Plan your moves carefully to avoid filling the board!',
   playUrl: '/number-merge.html',
   instructions: 'Use your arrow keys or swipe (on touch devices) to move all tiles in a direction. When two tiles with the same number touch, they merge into one, doubling their value. A new tile (either a 2 or a 4) appears on the board after every move. The game ends when the board is full and no more moves are possible. Your goal is to achieve the highest score and create the highest numbered tile.',
-  aspectRatio: '1 / 1',
+  aspectRatio: '5 / 7',
   nativeWidth: 500,
 };
 
