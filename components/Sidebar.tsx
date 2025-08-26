@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import Icon from './Icon';
 
 const Sidebar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const isGamePage = location.pathname.startsWith('/game/');
 
   const navItems = [
     { icon: 'fa-house', label: 'Home', path: '/' },
@@ -55,11 +58,21 @@ const Sidebar: React.FC = () => {
     </div>
   );
 
+  const headerClasses = [
+    'lg:hidden', 'bg-[#101010]/80', 'border-b', 'border-gray-800/50',
+    'z-40', 'backdrop-blur-md', 'h-20', 'flex', 'items-center',
+    'justify-start', 'relative', 'px-4', 'sm:px-6'
+  ];
+
+  if (!isGamePage) {
+    headerClasses.push('sticky', 'top-0');
+  }
+
 
   return (
     <>
       {/* Mobile Header */}
-      <header className="lg:hidden bg-[#101010]/80 border-b border-gray-800/50 sticky top-0 z-40 backdrop-blur-md h-20 flex items-center justify-start relative px-4 sm:px-6">
+      <header className={headerClasses.join(' ')}>
         <button
             onClick={() => setIsMenuOpen(true)}
             className="text-gray-300 hover:text-violet-400 transition-colors"
