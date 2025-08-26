@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MOCK_GAMES } from '../constants';
 import Icon from '../components/Icon';
@@ -6,6 +6,35 @@ import Icon from '../components/Icon';
 const GamePage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const game = MOCK_GAMES.find(g => g.id === gameId);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!gameContainerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      gameContainerRef.current.requestFullscreen().catch(err => {
+        // Silently fail for now, browser might show a message.
+        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
 
   if (!game) {
     return (
@@ -38,13 +67,25 @@ const GamePage: React.FC = () => {
         
         {/* Game Column */}
         <div className="w-full flex-shrink-0" style={gameColumnStyles}>
-           <div className="relative bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" style={{ aspectRatio: gameAspectRatio }}>
+           <div 
+              ref={gameContainerRef}
+              className="relative bg-black rounded-2xl shadow-2xl shadow-violet-900/40 overflow-hidden border border-gray-800" 
+              style={{ aspectRatio: gameAspectRatio }}
+            >
               <iframe
                 src={game.playUrl}
                 title={game.title}
                 className="absolute top-0 left-0 w-full h-full border-0"
                 allowFullScreen
               ></iframe>
+               <button
+                    onClick={toggleFullscreen}
+                    className="absolute top-3 right-3 z-10 bg-black/40 text-white hover:bg-black/70 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-200 backdrop-blur-sm"
+                    aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                    title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                >
+                    <Icon icon={isFullscreen ? "fa-compress" : "fa-expand"} className="text-lg" />
+                </button>
            </div>
         </div>
 
