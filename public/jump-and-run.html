@@ -70,8 +70,9 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly;
+            justify-content: center;
             align-items: center;
+            gap: 15px;
             padding: 20px 0;
             box-sizing: border-box;
         }
@@ -85,7 +86,6 @@
             justify-content: center;
             gap: 20px;
             width: 90%;
-            margin: 10px 0;
         }
         .score-box {
             background-color: #222831;
@@ -111,21 +111,22 @@
             line-height: 1.1;
         }
         #game-over-message-container {
-             min-height: 50px; 
+             min-height: 80px; 
              display: flex;
              flex-direction: column;
              align-items: center;
              justify-content: center;
         }
         #game-over-message {
-            font-size: 22px;
-            font-style: italic;
-            color: #AAAAAA;
+            font-size: 24px;
+            font-weight: 600;
+            color: #EEEEEE;
             margin: 0 20px;
+            line-height: 1.3;
         }
         #ad-container {
             width: 300px;
-            height: 250px;
+            height: 50px;
             border-radius: 8px;
             overflow: hidden;
         }
@@ -463,7 +464,8 @@
                 }
             } catch (e) { console.warn("Could not access localStorage. Progress will not be saved."); }
 
-            let player, obstacles, scoreBuffer, lastObstacleYCenter, lastTime;
+            let player, obstacles = [], scoreBuffer, lastObstacleYCenter, lastTime;
+            let obstaclePool = [];
             let currentGravity, currentObstacleSpeed, currentObstacleSpacing, currentObstacleGap;
             let confettiParticles = [], jumpParticles = [], backgroundStars = [];
 
@@ -490,6 +492,7 @@
 
             function resetGame() {
                 player = { x: PLAYER_START_X, y: PLAYER_START_Y, width: PLAYER_WIDTH, height: PLAYER_HEIGHT, velocityY: 0 };
+                obstacles.forEach(obs => obstaclePool.push(obs));
                 obstacles = [];
                 score = 0;
                 scoreBuffer = 0;
@@ -559,19 +562,50 @@
             }
             
             function getGameOverMessage(score) {
-                const messages = score <= 3 ? ["Was that a practice run?", "My grandma could beat that score.", "Did you confuse the screen with a wall?", "Gravity: 1, You: 0."]
-                             : score <= 10 ? ["Okay, you're trying. Maybe.", "You're getting better at this whole 'game over' thing.", "That was... an attempt.", "Slightly better than a rock."]
-                             : score <= 25 ? ["Not bad. For you.", "Hey, that was almost impressive.", "You're starting to get the hang of it.", "Respectable. I guess."]
-                             : score <= 100 ? ["Are you a wizard?", "That was legendary!", "Okay, you can stop showing off now.", "You've officially peaked."]
-                             : ["You are a legend.", "Is this even possible?!", "The game is broken. You won.", "GOAT."];
+                let messages;
+                if (score <= 20) {
+                    messages = [
+                        "Are you even trying?",
+                        "That was... pathetic.",
+                        "My cat could play better.",
+                        "Blink twice if you need help.",
+                        "Did you fall asleep?",
+                        "Seriously? That's your score?",
+                        "Maybe this game isn't for you.",
+                        "I've seen glaciers move faster.",
+                        "A truly monumental failure.",
+                        "Don't quit your day job."
+                    ];
+                } else { // score > 20
+                    messages = [
+                        "Okay, not completely terrible.",
+                        "You're starting to get it. Slowly.",
+                        "That was an almost respectable attempt.",
+                        "Getting warmer...",
+                        "Keep trying, you might get somewhere.",
+                        "I'm mildly impressed.",
+                        "Hey, that wasn't half bad.",
+                        "You've graduated from 'total disaster'."
+                    ];
+                }
                 return messages[Math.floor(Math.random() * messages.length)];
             }
             
-            function showGameOverScreen(isNewHighScore) {
+            function showGameOverScreen(isNewHighScore, showConfetti) {
                 currentScoreEl.textContent = score;
                 highScoreEl.textContent = highScore;
-                gameOverMessageEl.textContent = isNewHighScore ? "NEW HIGH SCORE!" : getGameOverMessage(score);
-                if (isNewHighScore) triggerConfetti();
+                
+                if (isNewHighScore) {
+                    gameOverMessageEl.textContent = "NEW HIGH SCORE!";
+                    gameOverMessageEl.style.color = '#54D77B';
+                    if (showConfetti) {
+                        triggerConfetti();
+                    }
+                } else {
+                    gameOverMessageEl.textContent = getGameOverMessage(score);
+                    gameOverMessageEl.style.color = ''; // Reset to default CSS color
+                }
+
                 gameOverScreen.style.display = 'flex';
                 customizeButton.style.display = 'none';
             }
@@ -618,10 +652,11 @@
 
                 // Progressive difficulty
                 const progression = Math.min(score / 20, 1.0); // Cap difficulty progression at score 20
-                currentGravity = 1800 + (2500 - 1800) * progression;
-                currentObstacleSpeed = -160 + (-250 - -160) * progression;
-                currentObstacleSpacing = 300 + (220 - 300) * progression;
-                currentObstacleGap = 125 + (100 - 125) * progression;
+                currentGravity = 2400 + (2600 - 2400) * progression;
+                currentObstacleSpeed = -250 + (-280 - -250) * progression;
+                currentObstacleSpacing = 230 + (210 - 230) * progression;
+                currentObstacleGap = 100 + (95 - 100) * progression;
+
 
                 player.velocityY += currentGravity * deltaTime;
                 player.y += player.velocityY * deltaTime;
@@ -648,8 +683,23 @@
                     const newCenterY = Math.max(minCenterY, Math.min(maxCenterY, lastObstacleYCenter + (Math.random() - 0.5) * 500));
                     const obstacleY = newCenterY - gap / 2;
                     lastObstacleYCenter = newCenterY;
-                    obstacles.push({ x: CANVAS_WIDTH, y: 0, width: OBSTACLE_WIDTH, height: obstacleY, passed: false });
-                    obstacles.push({ x: CANVAS_WIDTH, y: obstacleY + gap, width: OBSTACLE_WIDTH, height: CANVAS_HEIGHT - obstacleY - gap, passed: false });
+                    
+                    // Create obstacles using the pool
+                    let topObstacle = obstaclePool.pop() || {};
+                    topObstacle.x = CANVAS_WIDTH;
+                    topObstacle.y = 0;
+                    topObstacle.width = OBSTACLE_WIDTH;
+                    topObstacle.height = obstacleY;
+                    topObstacle.passed = false;
+                    obstacles.push(topObstacle);
+
+                    let bottomObstacle = obstaclePool.pop() || {};
+                    bottomObstacle.x = CANVAS_WIDTH;
+                    bottomObstacle.y = obstacleY + gap;
+                    bottomObstacle.width = OBSTACLE_WIDTH;
+                    bottomObstacle.height = CANVAS_HEIGHT - obstacleY - gap;
+                    bottomObstacle.passed = false;
+                    obstacles.push(bottomObstacle);
                 }
 
                 obstacles.forEach(o => {
@@ -661,7 +711,16 @@
                 });
 
                 score = Math.floor(scoreBuffer);
-                obstacles = obstacles.filter(o => o.x + o.width > 0);
+                
+                // Remove off-screen obstacles and return them to the pool
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    const o = obstacles[i];
+                    if (o.x + o.width <= 0) {
+                        obstaclePool.push(o);
+                        obstacles.splice(i, 1);
+                    }
+                }
+
 
                 let isGameOver = (player.y < 0 || player.y + player.height > CANVAS_HEIGHT);
                 if (!isGameOver) {
@@ -680,8 +739,9 @@
                     // Load the banner ad into the iframe
                     adBannerIframe.src = `banner.html?t=${new Date().getTime()}`;
 
+                    const oldHighScore = highScore;
                     let isNewHighScore = false;
-                    if (score > highScore) {
+                    if (score > oldHighScore) {
                         isNewHighScore = true;
                         highScore = score;
                     }
@@ -695,7 +755,7 @@
                         localStorage.setItem('jumpAndRunGamesPlayed', gamesPlayed);
                     } catch (e) { console.warn("Could not save progress to localStorage."); }
                     
-                    showGameOverScreen(isNewHighScore);
+                    showGameOverScreen(isNewHighScore, isNewHighScore && oldHighScore > 0);
 
                     retryButton.disabled = true;
                     retryButton.classList.add('disabled');
