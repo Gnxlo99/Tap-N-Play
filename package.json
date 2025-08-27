@@ -1,0 +1,14 @@
+{
+  "name": "tap-n-play",
+  "version": "1.0.0",
+  "description": "Your portal for online games. Discover and play a collection of exciting titles. Features a dark, modern design with interactive UI elements for an engaging user experience.",
+  "private": true,
+  "scripts": {
+    "build": "echo \"Build step not required. Deploying static files.\""
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^6.24.1"
+  }
+}
