@@ -34,27 +34,22 @@ const formatTimeAgo = (isoString: string): string => {
 const Comments: React.FC<CommentsProps> = ({ gameId }) => {
   const storageKey = `comments_${gameId}`;
   
-  const [comments, setComments] = useState<Comment[]>(() => {
-    try {
-      const storedComments = localStorage.getItem(storageKey);
-      return storedComments ? JSON.parse(storedComments) : [];
-    } catch (error) {
-      console.error("Failed to parse comments from localStorage", error);
-      return [];
-    }
-  });
-  
+  const [comments, setComments] = useState<Comment[]>([]);
   const [author, setAuthor] = useState('');
   const [text, setText] = useState('');
   const [error, setError] = useState('');
 
+  // Load comments from localStorage only on the client-side after mount.
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(comments));
+      const storedComments = localStorage.getItem(storageKey);
+      if (storedComments) {
+        setComments(JSON.parse(storedComments));
+      }
     } catch (error) {
-      console.error("Failed to save comments to localStorage", error);
+      console.error("Failed to parse comments from localStorage", error);
     }
-  }, [comments, storageKey]);
+  }, [storageKey]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +72,15 @@ const Comments: React.FC<CommentsProps> = ({ gameId }) => {
       timestamp: new Date().toISOString(),
     };
 
-    setComments([newComment, ...comments]);
+    const updatedComments = [newComment, ...comments];
+    setComments(updatedComments);
+    
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(updatedComments));
+    } catch (error) {
+      console.error("Failed to save comments to localStorage", error);
+    }
+
     setAuthor('');
     setText('');
     setError('');
