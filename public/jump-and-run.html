@@ -563,20 +563,20 @@
             
             function getGameOverMessage(score) {
                 let messages;
-                if (score <= 20) {
+                if (score <= 10) {
                     messages = [
                         "Are you even trying?",
-                        "That was... pathetic.",
+                        "That was... something.",
                         "My cat could play better.",
                         "Blink twice if you need help.",
                         "Did you fall asleep?",
-                        "Seriously? That's your score?",
+                        "Is that all you've got?",
                         "Maybe this game isn't for you.",
                         "I've seen glaciers move faster.",
                         "A truly monumental failure.",
                         "Don't quit your day job."
                     ];
-                } else { // score > 20
+                } else if (score <= 30) {
                     messages = [
                         "Okay, not completely terrible.",
                         "You're starting to get it. Slowly.",
@@ -586,6 +586,16 @@
                         "I'm mildly impressed.",
                         "Hey, that wasn't half bad.",
                         "You've graduated from 'total disaster'."
+                    ];
+                } else { // score > 30
+                    messages = [
+                        "Now we're talking!",
+                        "Impressive. Most impressive.",
+                        "You're a natural at this!",
+                        "Is that a high score I smell?",
+                        "You're on fire!",
+                        "Look at you go!",
+                        "You've got the skills."
                     ];
                 }
                 return messages[Math.floor(Math.random() * messages.length)];
@@ -652,7 +662,7 @@
 
                 // Constant difficulty
                 currentGravity = 2600;
-                currentObstacleSpeed = -280;
+                currentObstacleSpeed = -220;
                 currentObstacleSpacing = 210;
                 currentObstacleGap = 95;
 
