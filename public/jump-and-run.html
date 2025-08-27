@@ -650,13 +650,11 @@
             function update(deltaTime) {
                 if (gameState !== 'Playing') return;
 
-                // Progressive difficulty
-                const progression = Math.min(score / 20, 1.0); // Cap difficulty progression at score 20
-                currentGravity = 2400 + (2600 - 2400) * progression;
-                currentObstacleSpeed = -250 + (-280 - -250) * progression;
-                currentObstacleSpacing = 230 + (210 - 230) * progression;
-                currentObstacleGap = 100 + (95 - 100) * progression;
-
+                // Constant difficulty
+                currentGravity = 2600;
+                currentObstacleSpeed = -280;
+                currentObstacleSpacing = 210;
+                currentObstacleGap = 95;
 
                 player.velocityY += currentGravity * deltaTime;
                 player.y += player.velocityY * deltaTime;
