@@ -166,7 +166,7 @@
         }
         #customize-button {
             position: absolute;
-            bottom: 20%;
+            bottom: 25%;
             left: 50%;
             transform: translateX(-50%);
             font-family: 'Poppins', sans-serif;
@@ -183,34 +183,6 @@
         }
         #customize-button:active {
             transform: translateX(-50%) scale(0.95);
-        }
-        #difficulty-selector {
-            position: absolute;
-            bottom: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 5;
-            background-color: rgba(34, 40, 49, 0.7);
-            padding: 6px;
-            border-radius: 50px;
-        }
-        .difficulty-button {
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            color: #AAAAAA;
-            background-color: transparent;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        .difficulty-button.active {
-            background-color: #EEEEEE;
-            color: #222831;
         }
         #confetti-container {
             position: absolute;
@@ -401,11 +373,6 @@
                 <button id="close-customize-button" class="action-button">Close</button>
             </div>
         </div>
-        <div id="difficulty-selector">
-            <button class="difficulty-button" data-difficulty="easy">Easy</button>
-            <button class="difficulty-button" data-difficulty="medium">Medium</button>
-            <button class="difficulty-button" data-difficulty="hard">Hard</button>
-        </div>
         <button id="customize-button">Customize</button>
     </div>
 
@@ -431,7 +398,6 @@
             const tabContents = document.querySelectorAll('.tab-content');
             const envGrid = document.getElementById('env-grid');
             const envUnlockHint = document.getElementById('env-unlock-hint');
-            const difficultyButtons = document.querySelectorAll('.difficulty-button');
 
 
             // --- CONSTANTS ---
@@ -444,27 +410,6 @@
             const JUMP_STRENGTH = -450;
             const OBSTACLE_WIDTH = 40;
 
-            const DIFFICULTY_LEVELS = {
-                easy: {
-                    GRAVITY: 1800,
-                    OBSTACLE_SPEED: -160,
-                    OBSTACLE_SPACING: 300,
-                    OBSTACLE_GAP: 125,
-                },
-                medium: {
-                    GRAVITY: 2200,
-                    OBSTACLE_SPEED: -200,
-                    OBSTACLE_SPACING: 260,
-                    OBSTACLE_GAP: 110,
-                },
-                hard: {
-                    GRAVITY: 2500,
-                    OBSTACLE_SPEED: -250,
-                    OBSTACLE_SPACING: 220,
-                    OBSTACLE_GAP: 100,
-                }
-            };
-            
             const APPEARANCES = [
                 { shape: 'square', color: '#FFFFFF', unlock: { type: 'default' }, description: 'Default square' },
                 { shape: 'circle', color: '#FFFFFF', unlock: { type: 'score', value: 5 }, description: 'Score 5 points' },
@@ -492,8 +437,6 @@
             // --- GAME STATE ---
             let gameState = 'Start'; // Start, Playing, GameOver
             let score = 0, highScore = 0, gamesPlayed = 0;
-            let difficulty = 'medium';
-            let currentDifficultySettings = DIFFICULTY_LEVELS.medium;
             let currentAppearanceIndex = 0, currentEnvIndex = 0;
             let unlockedAppearances = new Array(APPEARANCES.length).fill(false);
             let unlockedEnvs = new Array(ENV_REWARDS.length).fill(false);
@@ -503,7 +446,6 @@
             try {
                 highScore = parseInt(localStorage.getItem('jumpAndRunHighScore') || '0', 10);
                 gamesPlayed = parseInt(localStorage.getItem('jumpAndRunGamesPlayed') || '0', 10);
-                difficulty = localStorage.getItem('jumpAndRunDifficulty') || 'medium';
                 currentAppearanceIndex = parseInt(localStorage.getItem('jumpAndRunAppearance') || '0', 10);
                 currentEnvIndex = parseInt(localStorage.getItem('jumpAndRunEnv') || '0', 10);
                 
@@ -522,27 +464,11 @@
             } catch (e) { console.warn("Could not access localStorage. Progress will not be saved."); }
 
             let player, obstacles, scoreBuffer, lastObstacleYCenter, lastTime;
+            let currentGravity, currentObstacleSpeed, currentObstacleSpacing, currentObstacleGap;
             let confettiParticles = [], jumpParticles = [], backgroundStars = [];
 
             canvas.width = CANVAS_WIDTH;
             canvas.height = CANVAS_HEIGHT;
-
-            function setDifficulty(newDifficulty) {
-                if (!DIFFICULTY_LEVELS[newDifficulty]) return;
-
-                difficulty = newDifficulty;
-                currentDifficultySettings = DIFFICULTY_LEVELS[difficulty];
-
-                difficultyButtons.forEach(button => {
-                    button.classList.toggle('active', button.dataset.difficulty === newDifficulty);
-                });
-
-                try {
-                    localStorage.setItem('jumpAndRunDifficulty', newDifficulty);
-                } catch (e) {
-                    console.warn("Could not save difficulty to localStorage.");
-                }
-            }
 
             function initializeBackground() {
                 backgroundStars = [];
@@ -575,7 +501,6 @@
 
                 gameOverScreen.style.display = 'none';
                 customizeButton.style.display = 'none';
-                document.getElementById('difficulty-selector').style.display = 'none';
                 adBannerIframe.src = 'about:blank'; // Clear the ad
                 gameState = 'Playing';
                 lastTime = performance.now();
@@ -649,7 +574,6 @@
                 if (isNewHighScore) triggerConfetti();
                 gameOverScreen.style.display = 'flex';
                 customizeButton.style.display = 'none';
-                document.getElementById('difficulty-selector').style.display = 'none';
             }
             
             function showUnlockNotification() {
@@ -692,25 +616,32 @@
             function update(deltaTime) {
                 if (gameState !== 'Playing') return;
 
-                player.velocityY += currentDifficultySettings.GRAVITY * deltaTime;
+                // Progressive difficulty
+                const progression = Math.min(score / 20, 1.0); // Cap difficulty progression at score 20
+                currentGravity = 1800 + (2500 - 1800) * progression;
+                currentObstacleSpeed = -160 + (-250 - -160) * progression;
+                currentObstacleSpacing = 300 + (220 - 300) * progression;
+                currentObstacleGap = 125 + (100 - 125) * progression;
+
+                player.velocityY += currentGravity * deltaTime;
                 player.y += player.velocityY * deltaTime;
 
                 for (let i = jumpParticles.length - 1; i >= 0; i--) {
                     const p = jumpParticles[i];
-                    p.vy += (currentDifficultySettings.GRAVITY / 4) * deltaTime; p.x += p.vx * deltaTime; p.y += p.vy * deltaTime; p.life -= deltaTime;
+                    p.vy += (currentGravity / 4) * deltaTime; p.x += p.vx * deltaTime; p.y += p.vy * deltaTime; p.life -= deltaTime;
                     if (p.life <= 0) jumpParticles.splice(i, 1);
                 }
                 
                 backgroundStars.forEach(star => {
                     if(star.z > 0) { // Parallax effect
-                        star.x += currentDifficultySettings.OBSTACLE_SPEED * star.z * deltaTime;
+                        star.x += currentObstacleSpeed * star.z * deltaTime;
                         if (star.x < 0) star.x += CANVAS_WIDTH;
                     }
                 });
 
                 const lastObstacle = obstacles[obstacles.length - 1];
-                if (!lastObstacle || lastObstacle.x < CANVAS_WIDTH - currentDifficultySettings.OBSTACLE_SPACING) {
-                    const gap = currentDifficultySettings.OBSTACLE_GAP;
+                if (!lastObstacle || lastObstacle.x < CANVAS_WIDTH - currentObstacleSpacing) {
+                    const gap = currentObstacleGap;
                     const verticalPadding = 50;
                     const minCenterY = gap / 2 + verticalPadding;
                     const maxCenterY = CANVAS_HEIGHT - gap / 2 - verticalPadding;
@@ -722,7 +653,7 @@
                 }
 
                 obstacles.forEach(o => {
-                    o.x += currentDifficultySettings.OBSTACLE_SPEED * deltaTime;
+                    o.x += currentObstacleSpeed * deltaTime;
                     if (!o.passed && o.x + o.width < player.x) {
                         o.passed = true;
                         scoreBuffer += 0.5;
@@ -890,7 +821,6 @@
                     drawPlayer(ctx, CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2, bobbingY, PLAYER_WIDTH, PLAYER_HEIGHT, timestamp);
                     drawText("Tap to Play", CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.85, 24);
                     customizeButton.style.display = 'block';
-                    document.getElementById('difficulty-selector').style.display = 'flex';
                     return;
                 }
 
@@ -1081,11 +1011,6 @@
                     });
                 });
             });
-            difficultyButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    setDifficulty(button.dataset.difficulty);
-                });
-            });
             window.addEventListener('keydown', (e) => {
                 if (e.code === 'Space') {
                     e.preventDefault();
@@ -1094,7 +1019,6 @@
             });
             
             // --- START GAME ---
-            setDifficulty(difficulty);
             initializeBackground();
             requestAnimationFrame(gameLoop);
         })();
