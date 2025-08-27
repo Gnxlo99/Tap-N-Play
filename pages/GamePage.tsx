@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MOCK_GAMES } from '../constants';
 import Icon from '../components/Icon';
+import Comments from '../components/Comments';
 
 const GamePage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -108,13 +109,15 @@ const GamePage: React.FC = () => {
                 <h2 className="text-2xl font-bold text-white mb-4">How to Play</h2>
                 <p className="text-gray-400 leading-relaxed">{game.instructions}</p>
             </div>
+          </div>
+
+          <Comments gameId={game.id} />
             
-            <div className="mt-8">
-                <Link to="/" className={`text-violet-400 hover:text-violet-300 font-semibold flex items-center space-x-2 transition-colors ${isSquareGame ? 'justify-center' : ''}`}>
-                    <Icon icon="fa-arrow-left" />
-                    <span>Back to All Games</span>
-                </Link>
-            </div>
+          <div className="mt-8">
+              <Link to="/" className={`text-violet-400 hover:text-violet-300 font-semibold flex items-center space-x-2 transition-colors ${isSquareGame ? 'justify-center' : ''}`}>
+                  <Icon icon="fa-arrow-left" />
+                  <span>Back to All Games</span>
+              </Link>
           </div>
         </div>
       </div>
