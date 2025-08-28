@@ -1,3 +1,6 @@
+// pages/privacypolicy.tsx
+// Or wherever you host your static pages
+
 import React from 'react';
 
 const PrivacyPolicyPage = () => {
@@ -5,102 +8,101 @@ const PrivacyPolicyPage = () => {
     <div style={{ fontFamily: 'sans-serif', lineHeight: '1.6', color: '#333' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
         <h1 style={{ fontSize: '2.5em', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-          Política de Privacidad de TapnPlay.online
+          Privacy Policy for TapnPlay.online
         </h1>
-        <p><strong>Última actualización:</strong> 27 de agosto de 2025</p>
+        <p><strong>Last updated:</strong> August 27, 2025</p>
 
         <p>
-          Bienvenido a TapnPlay.online (en adelante, "nosotros", "nuestro"). Tu privacidad es importante para nosotros.
-          Esta Política de Privacidad explica qué información recopilamos y por qué, y cómo la utilizamos y protegemos.
+          Welcome to TapnPlay.online (hereinafter, "we", "us", "our"). Your privacy is important to us.
+          This Privacy Policy explains what information we collect and why, and how we use and protect it.
         </p>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>1. Información que Recopilamos</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>1. Information We Collect</h2>
         <p>
-          Creemos en la simplicidad y en minimizar la recopilación de datos. Por eso, nuestro portal está diseñado para que
-          puedas jugar sin necesidad de crear una cuenta.
+          We believe in simplicity and minimizing data collection. That's why our portal is designed for you
+          to play without needing to create an account.
         </p>
-        <p><strong>Lo que NO recopilamos directamente:</strong></p>
+        <p><strong>What we DO NOT collect directly:</strong></p>
         <ul>
-          <li>Nombres de usuario</li>
-          <li>Direcciones de correo electrónico</li>
-          <li>Contraseñas</li>
-          <li>Fechas de nacimiento</li>
-          <li>Información de perfiles de usuario</li>
-          <li>Datos de comunicación (chats, foros)</li>
-          <li>Información de transacciones o pagos</li>
+          <li>Usernames</li>
+          <li>Email addresses</li>
+          <li>Passwords</li>
+          <li>Dates of birth</li>
+          <li>User profile information</li>
+          <li>Communication data (chats, forums)</li>
+          <li>Transaction or payment information</li>
         </ul>
 
-        <p><strong>Información que recopilamos de forma automática:</strong></p>
+        <p><strong>Information we collect automatically:</strong></p>
         <ul>
-          <li><strong>Puntuación del juego:</strong> Guardamos tus puntuaciones para registrar tu progreso y para las tablas de clasificación.</li>
+          <li><strong>Game Score:</strong> We save your scores to track your progress and for leaderboards.</li>
           <li>
-            <strong>Información Técnica:</strong> Al igual que la mayoría de los sitios web, recopilamos información técnica
-            que tu navegador nos envía automáticamente. Esto incluye tu dirección IP, tipo de navegador, sistema
-            operativo y tipo de dispositivo.
+            <strong>Technical Information:</strong> Like most websites, we collect technical information
+            that your browser automatically sends. This includes your IP address, browser type, operating
+            system, and device type.
           </li>
         </ul>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>2. Cómo Usamos tu Información</h2>
-        <p>Utilizamos la información que recopilamos para los siguientes propósitos:</p>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>2. How We Use Your Information</h2>
+        <p>We use the information we collect for the following purposes:</p>
         <ul>
-          <li><strong>Para la funcionalidad del juego:</strong> Para guardar tu puntuación y asegurar que los juegos funcionen correctamente.</li>
-          <li><strong>Para análisis y mejoras del servicio:</strong> Usamos la información técnica para entender cómo los visitantes usan nuestro sitio, qué juegos son más populares y cómo podemos mejorar la experiencia general.</li>
-          <li><strong>Para mostrar publicidad:</strong> Trabajamos con socios publicitarios para mostrar anuncios en nuestro sitio. La información técnica y las cookies (ver sección 3) ayudan a mostrar anuncios que sean más relevantes para ti.</li>
+          <li><strong>For Game Functionality:</strong> To save your score and ensure the games work correctly.</li>
+          <li><strong>For Analysis and Service Improvement:</strong> We use technical information to understand how visitors use our site, which games are most popular, and how we can improve the overall experience.</li>
+          <li><strong>To Display Advertising:</strong> We work with advertising partners to show ads on our site. Technical information and cookies (see section 3) help display ads that may be more relevant to you.</li>
         </ul>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>3. Cookies y Tecnologías Similares</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>3. Cookies and Similar Technologies</h2>
         <p>
-          Sí, utilizamos cookies. Las cookies son pequeños archivos de texto que se almacenan en tu navegador y nos ayudan a
-          que el sitio funcione y a entender cómo se utiliza. Usamos los siguientes tipos de cookies:
+          Yes, we use cookies. Cookies are small text files stored in your browser that help the site
+          function and help us understand how it is used. We use the following types of cookies:
         </p>
         <ul>
-          <li><strong>Cookies de Rendimiento y Análisis:</strong> Nos ayudan a recopilar datos estadísticos sobre el uso del sitio (ej. Google Analytics) para poder mejorarlo.</li>
-          <li><strong>Cookies de Publicidad:</strong> Son utilizadas por nuestros socios publicitarios (ej. Google AdSense) para mostrarte anuncios relevantes.</li>
+          <li><strong>Performance and Analytics Cookies:</strong> These help us collect statistical data about site usage (e.g., Google Analytics) so we can improve it.</li>
+          <li><strong>Advertising Cookies:</strong> These are used by our advertising partners (e.g., Google AdSense) to show you relevant ads.</li>
         </ul>
         <p>
-          <strong>¿Cómo gestionar las cookies?</strong> La mayoría de los navegadores web te permiten gestionar tus preferencias
-          de cookies a través de la configuración del navegador. Puedes configurar tu navegador para que rechace
-          las cookies o te avise antes de aceptarlas. Consulta la sección de 'Ayuda' o 'Configuración' de tu navegador
-          para obtener más información.
+          <strong>How to manage cookies?</strong> Most web browsers allow you to manage your cookie preferences
+          through your browser settings. You can set your browser to reject cookies or to alert you
+          before accepting them. Check the 'Help' or 'Settings' section of your browser for more information.
         </p>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>4. Con Quién Compartimos tu Información</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>4. Who We Share Your Information With</h2>
         <p>
-          No vendemos tu información. Sin embargo, compartimos datos técnicos y de uso con los siguientes tipos de socios:
+          We do not sell your information. However, we do share technical and usage data with the following types of partners:
         </p>
         <ul>
-          <li><strong>Proveedores de Analítica:</strong> Como Google Analytics, para analizar el tráfico del sitio web.</li>
-          <li><strong>Socios Publicitarios:</strong> Como Google AdSense, para mostrar anuncios en nuestro portal.</li>
+          <li><strong>Analytics Providers:</strong> Such as Google Analytics, to analyze website traffic.</li>
+          <li><strong>Advertising Partners:</strong> Such as Google AdSense, to display ads on our portal.</li>
         </ul>
         <p>
-          Estos terceros tienen sus propias políticas de privacidad sobre cómo usan la información.
+          These third parties have their own privacy policies regarding how they use this information.
         </p>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>5. Seguridad de los Datos</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>5. Data Security</h2>
         <p>
-          Nos tomamos la seguridad en serio. Utilizamos encriptación SSL y medidas de seguridad estándar de la industria
-          para proteger los datos durante su transmisión.
+          We take security seriously. We use SSL encryption and industry-standard security measures
+          to protect data during transmission.
         </p>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>6. Tus Derechos</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>6. Your Rights</h2>
         <p>
-          Dado que no recopilamos información personal que te identifique directamente, como tu correo electrónico,
-          las opciones para gestionar tus datos son principalmente a través del control de las cookies en tu navegador.
-          Si tienes alguna pregunta o inquietud sobre tu privacidad, no dudes en contactarnos.
+          Since we do not collect personally identifiable information, such as your email, your options
+          for managing your data are primarily through controlling cookies in your browser.
+          If you have any questions or concerns about your privacy, please do not hesitate to contact us.
         </p>
 
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>7. Privacidad de los Niños</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>7. Children's Privacy</h2>
         <p>
-          Nuestro portal de juegos puede ser utilizado por niños. <strong>No recopilamos intencionadamente información
-          personal identificable de niños menores de 13 años.</strong>
-          Toda la información que recopilamos (puntuaciones y datos técnicos) es anónima. Si eres un padre o tutor
-          y crees que tu hijo nos ha proporcionado información personal, por favor contáctanos inmediatamente a
-          nuestro correo de soporte para que podamos tomar las medidas necesarias.
+          Our gaming portal may be used by children. <strong>We do not knowingly collect personally
+          identifiable information from children under the age of 13.</strong>
+          All the information we collect (scores and technical data) is anonymous. If you are a parent or guardian
+          and you believe that your child has provided us with personal information, please contact us immediately at
+          our support email so we can take the necessary steps.
         </p>
         
-        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>8. Contacto</h2>
+        <h2 style={{ fontSize: '1.8em', marginTop: '30px' }}>8. Contact Us</h2>
         <p>
-          Si tienes alguna pregunta sobre esta Política de Privacidad, por favor contáctanos en:
+          If you have any questions about this Privacy Policy, please contact us at:
           <br />
           <strong>contacttapnplay.online</strong>
         </p>
